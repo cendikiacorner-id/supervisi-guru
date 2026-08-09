@@ -263,56 +263,56 @@ const KELAS=['VII A','VII B','VII C','VII D','VII E','VII F',
  'IX A','IX B','IX C','IX D','IX E','IX F'];
 
 /* ============ INSTRUMEN SUPERVISI ============
-   Ganti butirnya sesuai format sekolah.
-   bobot dipakai untuk menghitung skor akhir (total 100)  */
+   INSTRUMEN SUPERVISI PERENCANAAN PEMBELAJARAN
+   Berdasarkan Permendikdasmen No. 1 Tahun 2026 tentang Standar Proses
+   (Pasal 3-12) dan Prinsip Pembelajaran Mendalam
+   Skala: 1 = Hampir tidak ada · 2 = Sedikit dan lemah · 3 = Cukup · 4 = Memadai */
 const INSTRUMEN=[
- {kode:'A', judul:'Telaah Perencanaan Pembelajaran', bobot:30, ikon:'📋',
+ {kode:'A', judul:'Keselarasan Tujuan Pembelajaran', pasal:'Pasal 6', bobot:20, ikon:'🎯',
   butir:[
-   'Modul Ajar/RPP memuat identitas, Capaian Pembelajaran, dan Tujuan Pembelajaran yang jelas',
-   'Tujuan Pembelajaran selaras dengan CP dan Dimensi Profil Lulusan',
-   'Memuat Kriteria Ketercapaian Tujuan Pembelajaran (KKTP)',
-   'Langkah pembelajaran mencerminkan alur Memahami – Mengaplikasi – Merefleksi',
-   'Memuat asesmen awal (diagnostik), formatif, dan sumatif',
-   'Memanfaatkan media/teknologi digital yang relevan',
-   'Kelengkapan administrasi: Prota, Prosem, ATP, Kaldik, jurnal, daftar nilai'
+   'Tujuan pembelajaran, langkah pembelajaran, dan asesmen pembelajaran sudah mengarah pada pencapaian Dimensi Profil Lulusan.',
+   'Tujuan pembelajaran yang dirumuskan Guru sudah mengacu pada Standar Kompetensi Lulusan (SKL) dan standar isi.',
+   'Tujuan pembelajaran, langkah pembelajaran, dan asesmen pembelajaran sudah selaras satu sama lain.',
+   'Tujuan pembelajaran mempertimbangkan karakteristik Murid dan sumber daya Satuan Pendidikan.'
   ]},
- {kode:'B', judul:'Pelaksanaan Pembelajaran', bobot:40, ikon:'🎓',
+ {kode:'B', judul:'Kerangka Pembelajaran dalam Perencanaan', pasal:'Pasal 12', bobot:20, ikon:'🧩',
   butir:[
-   'Membuka pembelajaran dengan apersepsi dan menyampaikan tujuan',
-   'Menciptakan lingkungan belajar yang aman, nyaman, dan inklusif',
-   'Pembelajaran bersifat berkesadaran (mindful) — murid sadar tujuan belajarnya',
-   'Pembelajaran bermakna (meaningful) — dikaitkan dengan kehidupan nyata',
-   'Pembelajaran menggembirakan (joyful) — murid antusias dan terlibat aktif',
-   'Menerapkan pembelajaran berdiferensiasi sesuai kebutuhan murid',
-   'Memfasilitasi murid membangun pemahaman, bukan sekadar menerima informasi',
-   'Memanfaatkan media/teknologi digital secara efektif',
-   'Menerapkan kemitraan pembelajaran (diskusi, kerja kelompok, tutor sebaya)',
-   'Menutup pembelajaran dengan simpulan, refleksi, dan tindak lanjut'
+   'Praktik pedagogis yang direncanakan sudah tergambar pada langkah pembelajaran dan/atau asesmen.',
+   'Rencana kemitraan pembelajaran (Guru-Guru, Guru-Murid-orang tua/masyarakat) tergambar dalam perencanaan.',
+   'Rencana lingkungan pembelajaran (fisik, virtual, dan/atau sosial yang aman, nyaman, inklusif) tergambar dalam perencanaan.',
+   'Rencana pemanfaatan teknologi (digital maupun nondigital) tergambar dalam perencanaan.'
   ]},
- {kode:'C', judul:'Asesmen Pembelajaran', bobot:20, ikon:'📊',
+ {kode:'C', judul:'Langkah Pembelajaran &amp; Prinsip Pembelajaran Mendalam', pasal:'Pasal 3, 7, 10, 11', bobot:40, ikon:'🌱',
   butir:[
-   'Melaksanakan asesmen awal untuk memetakan kesiapan belajar murid',
-   'Melaksanakan asesmen formatif sebagai umpan balik berkelanjutan',
-   'Asesmen sumatif dirancang beragam (tes, portofolio, proyek, presentasi)',
-   'Memberikan umpan balik yang membangun kepada murid',
-   'Mendokumentasikan dan mengolah hasil asesmen secara tertib'
+   'Langkah pembelajaran memfasilitasi Murid untuk merasakan pengalaman belajar MEMAHAMI (terlibat aktif mengonstruksi pengetahuan dari berbagai sumber dan konteks).',
+   'Langkah pembelajaran memfasilitasi Murid untuk merasakan pengalaman belajar MENGAPLIKASI (menerapkan pemahaman secara kontekstual dalam kehidupan nyata).',
+   'Langkah pembelajaran memfasilitasi Murid untuk merasakan pengalaman belajar MEREFLEKSI (mengevaluasi dan memaknai proses serta hasil belajar, mengatur diri sendiri).',
+   'Langkah pembelajaran mencerminkan sikap saling memuliakan antara Guru-Murid, Murid-Guru, dan Murid-Murid.',
+   'Prinsip berkesadaran, bermakna, dan menggembirakan tergambar pada setiap tahapan langkah pembelajaran.',
+   'Perencanaan pembelajaran sudah mengakomodasi pengalaman belajar yang sesuai dengan karakteristik Murid.'
   ]},
- {kode:'D', judul:'Sikap dan Keprofesian', bobot:10, ikon:'🌟',
+ {kode:'D', judul:'Penilaian / Asesmen Pembelajaran', pasal:'Pasal 8', bobot:20, ikon:'📊',
   butir:[
-   'Hadir tepat waktu dan berpenampilan rapi',
-   'Berkomunikasi santun serta memuliakan murid',
-   'Terbuka terhadap masukan dan melakukan refleksi diri',
-   'Mengikuti pengembangan keprofesian (pelatihan, komunitas belajar)'
+   'Asesmen yang direncanakan turut mengukur ketercapaian Dimensi Profil Lulusan Murid, bukan hanya capaian akademik.',
+   'Perencanaan memuat asesmen yang digunakan untuk memberikan umpan balik guru memperbaiki proses pembelajaran.',
+   'Perencanaan memuat asesmen yang dapat mengukur ketercapaian tujuan pembelajaran sesuai karakteristik Murid.',
+   'Asesmen sudah memiliki teknik dan/atau instrumen dengan kriteria yang jelas untuk mengukur ketercapaian tujuan pembelajaran.'
   ]}
 ];
 
-/* skala penilaian */
+/* Catatan kualitatif Kepala Sekolah (butir 19-21) */
+const CATATAN=[
+ {k:'kelebihan', l:'Kelebihan Perencanaan Pembelajaran'},
+ {k:'perbaikan', l:'Hal yang Perlu Ditingkatkan'},
+ {k:'tindak',    l:'Rekomendasi Perbaikan sesuai Prinsip Standar Proses dan Pembelajaran Mendalam'}
+];
+
+/* skala penilaian sesuai instrumen resmi */
 const SKALA=[
- {n:4, l:'Sangat Baik', w:'#1a7f4b'},
- {n:3, l:'Baik',        w:'#2f9ee0'},
- {n:2, l:'Cukup',       w:'#e0a119'},
- {n:1, l:'Perlu Dibina',w:'#c0392b'},
- {n:0, l:'Belum Ada',   w:'#7a7a7a'}
+ {n:4, l:'Memadai',            w:'#1a7f4b'},
+ {n:3, l:'Cukup',              w:'#2f9ee0'},
+ {n:2, l:'Sedikit dan lemah',  w:'#e0a119'},
+ {n:1, l:'Hampir tidak ada',   w:'#c0392b'}
 ];
 
 /* dokumen yang diunggah tautannya oleh guru */
@@ -373,6 +373,11 @@ function isiPilihan(){
  document.getElementById('fTgl').value=hariIni();
  renderDokumen();renderPD();
 }
+function nomorGlobal(kode,i){
+ let n=0;
+ for(const b of INSTRUMEN){ if(b.kode===kode) return n+i+1; n+=b.butir.length; }
+ return i+1;
+}
 function pilihGuru(){
  const i=document.getElementById('fGuru').value;
  const e=document.getElementById('fNip');
@@ -388,10 +393,10 @@ function renderDokumen(){
 function renderPD(){
  document.getElementById('boxPD').innerHTML=INSTRUMEN.map(b=>`
   <div class="grup">
-    <div class="ghead">${b.ikon} ${b.kode}. ${esc(b.judul)} <em>(bobot ${b.bobot}%)</em></div>
+    <div class="ghead">${b.ikon} ${b.kode}. ${b.judul} <em>(${b.pasal||''} · bobot ${b.bobot}%)</em></div>
     ${b.butir.map((t,i)=>`
       <div class="butir">
-        <div class="bt">${b.kode}${i+1}. ${esc(t)}</div>
+        <div class="bt"><b>${nomorGlobal(b.kode,i)}.</b> ${t}</div>
         <div class="skala">${SKALA.map(s=>`
           <label><input type="radio" name="pd_${b.kode}${i}" value="${s.n}"><span style="--c:${s.w}">${s.n}</span></label>`).join('')}</div>
       </div>`).join('')}
@@ -488,13 +493,13 @@ function buka(id){
  h+=`</div>`;
  /* instrumen */
  INSTRUMEN.forEach(b=>{
-  h+=`<div class="grup"><div class="ghead">${b.ikon} ${b.kode}. ${esc(b.judul)} <em>(bobot ${b.bobot}%)</em></div>`;
+  h+=`<div class="grup"><div class="ghead">${b.ikon} ${b.kode}. ${b.judul} <em>(${b.pasal||''} · bobot ${b.bobot}%)</em></div>`;
   b.butir.forEach((t,i)=>{
    const kk=b.kode+(i+1);
    const pdv=(x.pd&&x.pd[kk]!=null)?x.pd[kk]:null;
    const sv=(x.sv&&x.sv[kk]!=null)?x.sv[kk]:null;
    h+=`<div class="butir">
-     <div class="bt">${kk}. ${esc(t)}</div>
+     <div class="bt"><b>${nomorGlobal(b.kode,i)}.</b> ${t}</div>
      <div class="duaskor">
        <span class="tagpd">Guru: <b>${pdv==null?'–':pdv}</b></span>
        <div class="skala">${SKALA.map(s=>`
@@ -503,13 +508,13 @@ function buka(id){
   });
   h+=`</div>`;
  });
- h+=`<div class="grup"><div class="ghead">💬 Catatan &amp; Tindak Lanjut</div>
+ h+=`<div class="grup"><div class="ghead">💬 E. Catatan Kualitatif Kepala Sekolah</div>
    ${x.catatanGuru?`<div class="info">Catatan guru: ${esc(x.catatanGuru)}</div>`:''}
-   <label class="lb">Kelebihan / hal yang sudah baik</label>
+   <label class="lb">19. Kelebihan Perencanaan Pembelajaran</label>
    <textarea id="cKelebihan" rows="3" ${boleh?'':'disabled'}>${esc(x.kelebihan||'')}</textarea>
-   <label class="lb">Hal yang perlu ditingkatkan</label>
+   <label class="lb">20. Hal yang Perlu Ditingkatkan</label>
    <textarea id="cPerbaikan" rows="3" ${boleh?'':'disabled'}>${esc(x.perbaikan||'')}</textarea>
-   <label class="lb">Rencana tindak lanjut</label>
+   <label class="lb">21. Rekomendasi Perbaikan sesuai Prinsip Standar Proses dan Pembelajaran Mendalam</label>
    <textarea id="cTindak" rows="3" ${boleh?'':'disabled'}>${esc(x.tindak||'')}</textarea>
    <label class="lb">Nama Supervisor</label>
    <input type="text" id="cSup" value="${esc(x.supervisor||CFG.kepsek)}" ${boleh?'':'disabled'} placeholder="Nama kepala sekolah / supervisor">
@@ -567,13 +572,14 @@ function cetak(){
  const x=AKTIF,h=hitung();
  let rows='';
  INSTRUMEN.forEach(b=>{
-  rows+=`<tr class="gr"><td colspan="4"><b>${b.kode}. ${esc(b.judul)}</b> (bobot ${b.bobot}%)</td></tr>`;
+  rows+=`<tr class="gr"><td colspan="7"><b>${b.kode}. ${b.judul}</b> (${b.pasal||''})</td></tr>`;
   b.butir.forEach((t,i)=>{
    const kk=b.kode+(i+1);
-   const pdv=(x.pd&&x.pd[kk]!=null)?x.pd[kk]:'–';
    const el=document.querySelector(`input[name="sv_${kk}"]:checked`);
-   const svv=el?el.value:((x.sv&&x.sv[kk]!=null)?x.sv[kk]:'–');
-   rows+=`<tr><td class="c">${kk}</td><td>${esc(t)}</td><td class="c">${pdv}</td><td class="c"><b>${svv}</b></td></tr>`;
+   const svv=el?Number(el.value):((x.sv&&x.sv[kk]!=null)?x.sv[kk]:null);
+   const ck=n=>svv===n?'&#10003;':'';
+   rows+=`<tr><td class="c">${nomorGlobal(b.kode,i)}</td><td>${t}</td>
+     <td class="c">${ck(1)}</td><td class="c">${ck(2)}</td><td class="c">${ck(3)}</td><td class="c">${ck(4)}</td></tr>`;
   });
  });
  const dok=(x.dok||[]).map(d=>`<li>${d.siap?'✔':'✗'} ${esc(d.nama)}${d.link?' — ada tautan':''}</li>`).join('');
@@ -610,20 +616,22 @@ function cetak(){
   <tr><td>Hari / Tanggal</td><td>: ${tglID(x.tgl)}</td></tr>
   <tr><td>Materi</td><td>: ${esc(x.materi||'-')}</td></tr>
  </table>
- <h3 style="font-size:11pt;margin:12px 0 4px">A. Kelengkapan Dokumen</h3>
+ <h3 style="font-size:11pt;margin:12px 0 4px">Kelengkapan Dokumen</h3>
  <ul>${dok||'<li>—</li>'}</ul>
- <h3 style="font-size:11pt;margin:12px 0 4px">B. Hasil Penilaian</h3>
- <table><thead><tr><th>No</th><th>Butir Penilaian</th><th>Guru</th><th>Supervisor</th></tr></thead>
+ <p style="font-size:9.5pt;margin:10px 0 4px">Skala: <b>1</b> = Hampir tidak ada &nbsp; <b>2</b> = Sedikit dan lemah &nbsp; <b>3</b> = Cukup &nbsp; <b>4</b> = Memadai</p>
+ <table><thead><tr><th rowspan="2" style="width:28px">No</th><th rowspan="2">Aspek yang Diamati</th>
+ <th colspan="4">Skala</th></tr>
+ <tr><th class="c" style="width:26px">1</th><th class="c" style="width:26px">2</th><th class="c" style="width:26px">3</th><th class="c" style="width:26px">4</th></tr></thead>
  <tbody>${rows}</tbody></table>
  <div class="skor">NILAI AKHIR &nbsp; <b>${h.na}</b> &nbsp; ( ${h.pr[0]} — ${h.pr[1]} )</div>
  <div class="cat">
-  <h3>Kelebihan / hal yang sudah baik</h3><div>${esc(x.kelebihan||'')}</div>
-  <h3>Hal yang perlu ditingkatkan</h3><div>${esc(x.perbaikan||'')}</div>
-  <h3>Rencana tindak lanjut</h3><div>${esc(x.tindak||'')}</div>
+  <h3>19. Kelebihan Perencanaan Pembelajaran</h3><div>${esc(x.kelebihan||'')}</div>
+  <h3>20. Hal yang Perlu Ditingkatkan</h3><div>${esc(x.perbaikan||'')}</div>
+  <h3>21. Rekomendasi Perbaikan sesuai Prinsip Standar Proses dan Pembelajaran Mendalam</h3><div>${esc(x.tindak||'')}</div>
  </div>
  <table class="ttd"><tr>
-  <td>Guru yang disupervisi,<div class="sp"></div><u>${esc(x.guru)}</u><br>NIP. ${esc(x.nip||'..........................')}</td>
-  <td>Mojokerto, ${tglID(hariIni())}<br>Supervisor,<div class="sp"></div><u>${esc(x.supervisor||CFG.kepsek||'..............................')}</u><br>NIP. ${esc(x.nipSup||CFG.nipKepsek||'..........................')}</td>
+  <td>Guru yang Disupervisi,<div class="sp"></div><u>${esc(x.guru)}</u><br>NIP. ${esc(x.nip||'..........................')}</td>
+  <td>Mojokerto, ${tglID(hariIni())}<br>Kepala Sekolah / Supervisor,<div class="sp"></div><u>${esc(x.supervisor||CFG.kepsek||'..............................')}</u><br>NIP. ${esc(x.nipSup||CFG.nipKepsek||'..........................')}</td>
  </tr></table>
  <script>setTimeout(function(){window.print()},400);<\/script>
  </body></html>`);
@@ -697,5 +705,5 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2857f2a6c37e299',t:'MTc4NjI2NTI1Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2859becfbcac3c2',t:'MTc4NjI2NjQzMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
