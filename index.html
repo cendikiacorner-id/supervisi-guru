@@ -693,7 +693,10 @@ function muatDaftar(){
  ambilSheets(function(r){
    DAFTAR=(r&&r.data)||[];tampilDaftar();
  },function(){
-   box.innerHTML='<div class="kosong">Tidak dapat memuat data.<br><small>Periksa koneksi atau pastikan Apps Script sudah dipasang.</small><br><button class="mini" style="margin-top:10px" onclick="muatDaftar()">Coba Lagi</button></div>';
+   box.innerHTML='<div class="kosong">Tidak dapat memuat data.<br>'
+     +'<small>Kemungkinan jaringan ini memblokir Google Apps Script.<br>'
+     +'Coba matikan WiFi lalu pakai hotspot HP, atau tekan Coba Lagi.</small><br>'
+     +'<button class="mini" style="margin-top:10px" onclick="muatDaftar()">Coba Lagi</button></div>';
  });
 }
 function tampilDaftar(){
@@ -916,16 +919,56 @@ function unduhCSV(){
 /* ============ SINKRONISASI ============ */
 function jsonp(params,ok,gagal,batas){
  if(!CFG.url){if(gagal)gagal();return;}
- const cb='sp_'+Math.random().toString(36).slice(2,9);
  const q=Object.keys(params).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(params[k])).join('&');
- const sc=document.createElement('script');let kelar=false;
- window[cb]=function(r){kelar=true;try{if(ok)ok(r)}finally{bersih()}};
- function bersih(){try{delete window[cb]}catch(e){window[cb]=undefined}
-   if(sc.parentNode)sc.parentNode.removeChild(sc);clearTimeout(jam);}
- const jam=setTimeout(()=>{if(!kelar){kelar=true;bersih();if(gagal)gagal()}},batas||60000);
- sc.onerror=()=>{if(!kelar){kelar=true;bersih();if(gagal)gagal()}};
- sc.src=CFG.url+'?'+q+'&_t='+Date.now()+'&callback='+cb;
- document.body.appendChild(sc);
+ const alamat=CFG.url+'?'+q+'&_t='+Date.now();
+ const tempo=batas||60000;
+ let sudah=false;
+ const beres=function(r){ if(sudah)return; sudah=true; ok(r); };
+ const buruk=function(){ if(sudah)return; sudah=true; if(gagal)gagal(); };
+
+ /* --- JALUR 1: fetch langsung (paling andal di laptop) --- */
+ let batal1=null;
+ try{
+   if(window.AbortController){batal1=new AbortController();setTimeout(function(){try{batal1.abort()}catch(e){}},tempo);}
+   fetch(alamat,{method:'GET',signal:batal1?batal1.signal:undefined})
+    .then(function(res){return res.text();})
+    .then(function(t){
+      let r=null; try{ r=JSON.parse(t); }catch(e){}
+      if(r) beres(r); else jalur2();
+    })
+    .catch(function(){ jalur2(); });
+ }catch(e){ jalur2(); }
+ setTimeout(function(){ if(!sudah)jalur2(); }, 12000);
+
+ /* --- JALUR 2: JSONP lewat tag script (cara lama) --- */
+ let jalan2=false;
+ function jalur2(){
+  if(sudah||jalan2)return; jalan2=true;
+  const cb='sp_'+Math.random().toString(36).slice(2,9);
+  const sc=document.createElement('script'); let kelar=false;
+  window[cb]=function(r){kelar=true;bersih();beres(r);};
+  function bersih(){try{delete window[cb]}catch(e){window[cb]=undefined}
+    if(sc.parentNode)sc.parentNode.removeChild(sc);clearTimeout(jam);}
+  const jam=setTimeout(function(){if(!kelar){bersih();jalur3();}},tempo/2);
+  sc.onerror=function(){if(!kelar){bersih();jalur3();}};
+  sc.src=alamat+'&callback='+cb;
+  document.body.appendChild(sc);
+ }
+
+ /* --- JALUR 3: lewat perantara umum (bila 1 & 2 dihalangi jaringan) --- */
+ let jalan3=false;
+ function jalur3(){
+  if(sudah||jalan3)return; jalan3=true;
+  const lewat='https://api.allorigins.win/raw?url='+encodeURIComponent(alamat);
+  let b=null;
+  try{
+    if(window.AbortController){b=new AbortController();setTimeout(function(){try{b.abort()}catch(e){}},tempo);}
+    fetch(lewat,{signal:b?b.signal:undefined})
+     .then(function(res){return res.text();})
+     .then(function(t){ let r=null; try{r=JSON.parse(t);}catch(e){} if(r)beres(r); else buruk(); })
+     .catch(function(){ buruk(); });
+  }catch(e){ buruk(); }
+ }
 }
 
 /* kirim dengan pengulangan otomatis bila sinyal putus */
@@ -1073,5 +1116,5 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2871601bf4a12b0',t:'MTc4NjI4MTkxNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
