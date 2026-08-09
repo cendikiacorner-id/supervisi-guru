@@ -236,8 +236,8 @@ const CFG={
   alamat:'Kabupaten Mojokerto — Jawa Timur',
   npsn:'',
   tahun:'2026/2027',
-  kepsek:'',            /* nama kepala sekolah */
-  nipKepsek:'',         /* NIP kepala sekolah */
+  kepsek:'Ridha Dwi Wulansari, S.Pd., M.Pd',
+  nipKepsek:'19731011 200604 2 014',
   /* kode akses */
   kodeGuru:'spensabajaya-guru',
   kodeSupervisor:'spensabajaya-kepsek',
@@ -248,15 +248,47 @@ const CFG={
 
 /* ============ DAFTAR GURU (boleh diubah) ============ */
 const GURU=[
- /* format: {n:'Nama Lengkap, Gelar', nip:'NIP'} — NIP boleh dikosongkan */
- {n:'Yudi Hari Siswanto, S.S.',  nip:''},
- {n:'Nico Rochmadi, S.Pd.',      nip:''},
- {n:'Kiki Aprilia, S.Pd.',       nip:''},
- {n:'Suhartono, S.Pd.',          nip:''}
+ /* Daftar guru SMP Negeri 1 Bangsal — TP 2026/2027 */
+ {n:'Suparni, S.Pd.', nip:'19670912 199903 1 004', kode:'PN', mapel:'Bahasa Inggris'},
+ {n:'Komari, S.Pd.', nip:'19661005 199001 1 007', kode:'KM', mapel:'IPA'},
+ {n:'Eko Sunarto, S.Pd.', nip:'19670616 199103 1 012', kode:'EK', mapel:'PJOK'},
+ {n:'Dra. Tri Mulyani, M.Pd.', nip:'19680628 199802 2 004', kode:'TM', mapel:'Bahasa Inggris'},
+ {n:'Endah Kurniasih, S.Pd.', nip:'19710807 199703 2 006', kode:'EN', mapel:'IPS'},
+ {n:'Nico Rochmadi, S.Pd.', nip:'19710116 199903 1 003', kode:'NC', mapel:'IPA'},
+ {n:'Yayuk Sriwahyuningsih, S.Pd.', nip:'19690412 199802 2 003', kode:'YY', mapel:'IPA'},
+ {n:'Teguh Prabowo, S.Pd.', nip:'19710706 199703 1 004', kode:'TP', mapel:'Bahasa Inggris'},
+ {n:'Purboningrum, S.Pd.', nip:'19720618 199803 2 007', kode:'PB', mapel:'IPA'},
+ {n:'Sumartono, S.Pd.', nip:'19700122 199802 1 002', kode:'SM', mapel:'Matematika · Bahasa Jawa'},
+ {n:'Ninik Fitrianingsih, S.Pd.', nip:'19760926 200212 2 004', kode:'NF', mapel:'Bimbingan Konseling'},
+ {n:'Wiwik Hafidhotul I., S.Pd.I.', nip:'19760421 200212 2 013', kode:'WH', mapel:'PAI · Seni Budaya'},
+ {n:'Gemipujiati, S.Pd.', nip:'19691220 200501 2 007', kode:'GP', mapel:'Matematika · Bahasa Jawa'},
+ {n:'Yanuar Prihatin, S.Pd.', nip:'19690105 200801 2 022', kode:'YN', mapel:'Bahasa Indonesia'},
+ {n:'Nanik Nurohmah, S.Pd.', nip:'19731018 200701 2 007', kode:'NR', mapel:'Matematika · Bahasa Jawa'},
+ {n:'Endah Dwi K, S.Pd.', nip:'19730102 200801 2 015', kode:'ED', mapel:'Bahasa Indonesia'},
+ {n:'Elly Panca Kurniawati, S.E.', nip:'19691117 200801 2 014', kode:'EL', mapel:'IPS'},
+ {n:'Nur Afifah, S.Pd.', nip:'19851020 200901 2 005', kode:'AF', mapel:'Bimbingan Konseling'},
+ {n:'Yudi Hari Siswanto, S.S.', nip:'19840524 201001 1 009', kode:'YD', mapel:'Bahasa Inggris'},
+ {n:'Nur Ayni Hamidah, S.Pd.', nip:'19691204 200501 2 010', kode:'NA', mapel:'Matematika · Bahasa Jawa'},
+ {n:'Arumantika Eko Yulia P., S.Pd.', nip:'19890404 201708 2 002', kode:'AR', mapel:'Informatika/Koding'},
+ {n:'Kiki Aprilia, S.Pd.', nip:'199604272020122013', kode:'KA', mapel:'Bahasa Indonesia'},
+ {n:'Nimas Wegig Kurniana, S.Pd.', nip:'199308152020122015', kode:'NW', mapel:'PAI · Seni Budaya'},
+ {n:'Inno Azizah, S.Pd.', nip:'199305022020122012', kode:'IA', mapel:'Pendidikan Pancasila · Bahasa Jawa'},
+ {n:'Sriasih, S.Pd.', nip:'196908152021212006', kode:'SR', mapel:'Bahasa Indonesia · Bahasa Jawa'},
+ {n:'Anton Dwi Kurniawan, S.Pd.', nip:'198409092021211003', kode:'AD', mapel:'Bahasa Indonesia'},
+ {n:'Siti Annah, S.Pd.', nip:'197507182021212005', kode:'SA', mapel:'Bimbingan Konseling'},
+ {n:'Indayati, S.Pd.', nip:'196805262024212001', kode:'IN', mapel:'Pendidikan Pancasila · Bahasa Jawa'},
+ {n:'Aris Muazir, S.Pd.I.', nip:'198705212025211016', kode:'AM', mapel:'PAI · Bahasa Jawa'},
+ {n:'Febri Andey Wibowo, S.Pd.', nip:'199307242025211015', kode:'FA', mapel:'Bimbingan Konseling · Bahasa Jawa'},
+ {n:'Aulia Eka Rahma, S.Si.', nip:'199312212025212011', kode:'AU', mapel:'IPA · Informatika/KKA'},
+ {n:'Eny Pujiastutik, S.S.', nip:'198006232025212031', kode:'EP', mapel:'PJOK'},
+ {n:'Ni\'matul Fauziyah, S.Pd.', nip:'198211082025212050', kode:'NM', mapel:'Bahasa Inggris · Informatika/Koding'},
+ {n:'Wayan Indi Haidar Mufidah, S.Pd.', nip:'200001172025212040', kode:'WN', mapel:'Matematika · Seni Budaya'},
+ {n:'Devy Agustin Kartika Sari, S.Pd.', nip:'200008162025212035', kode:'DV', mapel:'IPS · PJOK'},
+ {n:'Afriza Rachmawati, S.Pd.', nip:'199104272025212111', kode:'AZ', mapel:'Seni Budaya · Bahasa Jawa'},
+ {n:'Nurin Fardhiannah, S.Pd.', nip:'', kode:'NU', mapel:'Pendidikan Pancasila · Informatika/Koding'}
 ];
 
-const MAPEL=['Bahasa Inggris','Bahasa Indonesia','Matematika','IPA','IPS','PPKn',
- 'PAI & Budi Pekerti','Seni Budaya','PJOK','Informatika','Prakarya','Bimbingan Konseling'];
+const MAPEL=['Bahasa Indonesia','Bahasa Inggris','Bahasa Jawa','Bimbingan Konseling','IPA','IPS','Informatika/KKA','Informatika/Koding','Matematika','PAI','PJOK','Pendidikan Pancasila','Seni Budaya'];
 
 const KELAS=['VII A','VII B','VII C','VII D','VII E','VII F',
  'VIII A','VIII B','VIII C','VIII D','VIII E','VIII F',
@@ -380,8 +412,17 @@ function nomorGlobal(kode,i){
 }
 function pilihGuru(){
  const i=document.getElementById('fGuru').value;
- const e=document.getElementById('fNip');
- if(i!==''&&GURU[i])e.value=GURU[i].nip||'';
+ if(i===''||!GURU[i])return;
+ const g=GURU[i];
+ document.getElementById('fNip').value=g.nip||'';
+ /* isi mapel otomatis bila cocok dengan daftar */
+ const sel=document.getElementById('fMapel');
+ if(g.mapel){
+  const utama=g.mapel.split('·')[0].trim();
+  for(let k=0;k<sel.options.length;k++){
+    if(sel.options[k].value===utama){sel.selectedIndex=k;break;}
+  }
+ }
 }
 function renderDokumen(){
  document.getElementById('boxDok').innerHTML=DOKUMEN.map((d,i)=>`
@@ -705,5 +746,5 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2859becfbcac3c2',t:'MTc4NjI2NjQzMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
