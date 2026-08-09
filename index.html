@@ -137,6 +137,32 @@ box-shadow:0 2px 9px rgba(13,59,87,.08)}
 .tb tr:nth-child(even) td{background:#f7fafc}
 .kosong{text-align:center;color:#7c95a6;font-size:13px;padding:28px 12px;background:#fff;border-radius:12px}
 .cari{margin-bottom:10px}
+.modalbg{position:fixed;inset:0;background:rgba(8,26,40,.72);z-index:200;
+  display:none;align-items:center;justify-content:center;padding:18px;overflow:auto}
+.modalbg.on{display:flex}
+.modalbg .mk{background:#fff;border-radius:18px;max-width:430px;width:100%;
+  padding:26px 22px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.35);
+  animation:mpop .22s ease-out}
+@keyframes mpop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.mikon{width:66px;height:66px;line-height:66px;border-radius:50%;margin:0 auto 12px;
+  font-size:33px;color:#fff}
+.modalbg.sukses .mikon{background:#1a9e4b}
+.modalbg.tunda  .mikon{background:#e0a800}
+.modalbg.gagal  .mikon{background:#d33}
+.mk h3{margin:0 0 6px;font-size:20px;color:#0d3b57}
+.modalbg.sukses .mk h3{color:#14622f}
+.modalbg.tunda  .mk h3{color:#7a5600}
+.modalbg.gagal  .mk h3{color:#8b1a1a}
+.msub{margin:0 0 14px;font-size:13.5px;color:#567;line-height:1.55}
+.mtab{width:100%;border-collapse:collapse;text-align:left;margin-bottom:12px}
+.mtab td{padding:7px 8px;font-size:13px;border-bottom:1px solid #eef2f5}
+.mtab td:first-child{color:#789;width:44%}
+.mbox{background:#f4f8fb;border-left:4px solid #0d3b57;border-radius:8px;
+  padding:11px 13px;font-size:13px;color:#345;text-align:left;line-height:1.55;margin-bottom:12px}
+.mnote{font-size:12px;color:#89a;margin:0 0 14px;line-height:1.5}
+.mbtn{background:#0d3b57;color:#fff;border:0;border-radius:10px;padding:13px 22px;
+  font-size:15px;font-weight:700;cursor:pointer;width:100%}
+.mbtn:hover{background:#155a82}
 #barAntre{position:sticky;top:52px;z-index:60;background:#fff4d6;border-bottom:2px solid #e0a800;
   padding:10px 14px;font-size:13.5px;color:#6b4b00;display:flex;gap:10px;align-items:center;
   justify-content:center;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.08)}
@@ -255,6 +281,8 @@ opacity:0;pointer-events:none;transition:.28s;z-index:90;box-shadow:0 6px 20px r
   </div>
   <p class="ft">SMP Negeri 1 Bangsal &middot; Kabupaten Mojokerto</p>
 </div></section>
+
+<div class="modalbg" id="modalKirim"><div class="mk" id="modalIsi"></div></div>
 
 <div id="toast"></div>
 
@@ -620,10 +648,12 @@ function kirimGuru(){
    rec.dok=DOKUMEN.map((d,i)=>({nama:d.nama,tipe:d.tipe,
      siap:document.getElementById('dk'+i).checked,
      link:d.tipe==='foto'?FOLDER_FOTO:(document.getElementById('dl'+i).value||'').trim()}));
-   kirimSheets(rec,function(){
-     toast('Berhasil dikirim ke Kepala Sekolah');
-     document.getElementById('fCatatan').value='';document.getElementById('fMateri').value='';
-     renderPD();renderDokumen();
+   kirimSheets(rec,function(sukses){
+     if(sukses){
+       document.getElementById('fCatatan').value='';document.getElementById('fMateri').value='';
+       renderPD();renderDokumen();
+       kotakBerhasil(rec);
+     }
    });
  };
 
@@ -891,14 +921,11 @@ function kirimSheets(rec,ok){
  if(!CFG.url){alert('URL Apps Script belum diisi.\nBuka file ini, cari CFG.url, lalu tempel URL Web App.');return;}
  simpanAntre(rec);                         /* disimpan dulu di HP, aman */
  jsonpUlang({aksi:'simpan',payload:JSON.stringify(rec)},function(r){
-   if(r&&r.status==='ok'){hapusAntre(rec.id);if(ok)ok();}
-   else{alert('Gagal menyimpan: '+((r&&r.pesan)||'tidak diketahui'));}
+   if(r&&r.status==='ok'){hapusAntre(rec.id);if(ok)ok(true);}
+   else{kotakGagal('Google menolak menyimpan: '+((r&&r.pesan)||'tidak diketahui'));if(ok)ok(false);}
  },function(){
-   alert('Sinyal internet sedang lemah, pengiriman belum berhasil.\n\n'
-        +'TENANG — isian Anda SUDAH TERSIMPAN di perangkat ini dan tidak hilang.\n'
-        +'Bila sinyal sudah membaik, buka kembali halaman ini lalu tekan tombol '
-        +'"Kirim Ulang Data Tertunda" di bagian atas.');
-   if(ok)ok();
+   kotakTertunda();
+   if(ok)ok(false);
  },4,'Mengirim…');
 }
 
@@ -922,8 +949,13 @@ function kirimAntre(){
  (function lagi(){
    if(ke>=a.length){
      tandaAntre();
-     alert(sukses+' dari '+a.length+' data berhasil dikirim.'
-       +(sukses<a.length?'\n\nSisanya masih tertunda — coba lagi saat sinyal lebih baik.':''));
+     bukaKotak(sukses===a.length?'sukses':'tunda',
+       '<div class="mikon">'+(sukses===a.length?'&#10004;':'&#9203;')+'</div>'+
+       '<h3>'+sukses+' dari '+a.length+' data terkirim</h3>'+
+       (sukses===a.length
+         ? '<p class="msub">Semua data tertunda sudah berhasil dikirim ke Kepala Sekolah.</p>'
+         : '<p class="msub">Sisanya masih tertunda. Coba lagi saat sinyal lebih baik — data tidak hilang.</p>')+
+       '<button class="mbtn" onclick="tutupKotak()">Tutup</button>');
      return;
    }
    const rec=a[ke];
@@ -934,6 +966,59 @@ function kirimAntre(){
  })();
 }
 function ambilSheets(ok,gagal){ jsonp({aksi:'daftar'},ok,gagal); }
+
+
+/* ============ KOTAK PEMBERITAHUAN BESAR ============ */
+function tutupKotak(){var m=document.getElementById('modalKirim'); if(m)m.classList.remove('on');}
+function bukaKotak(warna,isi){
+ var m=document.getElementById('modalKirim');
+ if(!m){alert(isi.replace(/<[^>]+>/g,' '));return;}
+ m.className='modalbg on '+warna;
+ document.getElementById('modalIsi').innerHTML=isi;
+ m.scrollTop=0;
+}
+function kotakBerhasil(rec){
+ var jam=new Date();
+ var w=('0'+jam.getHours()).slice(-2)+':'+('0'+jam.getMinutes()).slice(-2)+':'+('0'+jam.getSeconds()).slice(-2);
+ var tg=('0'+jam.getDate()).slice(-2)+'/'+('0'+(jam.getMonth()+1)).slice(-2)+'/'+jam.getFullYear();
+ var bukti='SUP-'+String(rec.id).slice(-8);
+ var nfoto=(rec.folderFoto?'terkirim':'tidak disertakan');
+ bukaKotak('sukses',
+  '<div class="mikon">&#10004;</div>'+
+  '<h3>Berhasil Terkirim</h3>'+
+  '<p class="msub">Data sudah masuk ke Kepala Sekolah dan tersimpan di Google Sheets.</p>'+
+  '<table class="mtab">'+
+  '<tr><td>Nama Guru</td><td>'+esc(rec.guru)+'</td></tr>'+
+  '<tr><td>Mata Pelajaran</td><td>'+esc(rec.mapel)+'</td></tr>'+
+  '<tr><td>Kelas</td><td>'+esc(rec.kelas)+'</td></tr>'+
+  '<tr><td>Tanggal Supervisi</td><td>'+esc(rec.tgl)+'</td></tr>'+
+  '<tr><td>Nilai Penilaian Diri</td><td><b>'+((rec.pd&&rec.pd._total)||0)+'</b> ('+((rec.pd&&rec.pd._terisi)||0)+' dari 18 butir terisi)</td></tr>'+
+  '<tr><td>Foto</td><td>'+nfoto+'</td></tr>'+
+  '<tr><td>Waktu Kirim</td><td>'+tg+' pukul '+w+'</td></tr>'+
+  '<tr><td>Nomor Bukti</td><td><b>'+bukti+'</b></td></tr>'+
+  '</table>'+
+  '<p class="mnote">Simpan nomor bukti di atas bila sewaktu-waktu perlu ditanyakan.</p>'+
+  '<button class="mbtn" onclick="tutupKotak()">Tutup</button>');
+}
+function kotakTertunda(){
+ bukaKotak('tunda',
+  '<div class="mikon">&#9203;</div>'+
+  '<h3>Belum Terkirim</h3>'+
+  '<p class="msub">Sinyal internet sedang lemah, pengiriman belum berhasil setelah 4 kali percobaan.</p>'+
+  '<div class="mbox"><b>Isian Anda TIDAK HILANG.</b><br>'+
+  'Data sudah tersimpan di perangkat ini. Bila sinyal membaik, buka kembali halaman ini '+
+  'lalu tekan tombol kuning <b>&ldquo;Kirim Ulang Data Tertunda&rdquo;</b> di bagian atas layar.</div>'+
+  '<p class="mnote">Saran: matikan WiFi lalu gunakan data seluler, biasanya lebih lancar.</p>'+
+  '<button class="mbtn" onclick="tutupKotak()">Mengerti</button>');
+}
+function kotakGagal(pesan){
+ bukaKotak('gagal',
+  '<div class="mikon">&#10006;</div>'+
+  '<h3>Gagal Menyimpan</h3>'+
+  '<p class="msub">'+esc(pesan)+'</p>'+
+  '<div class="mbox">Isian Anda tetap tersimpan di perangkat ini dan dapat dikirim ulang.</div>'+
+  '<button class="mbtn" onclick="tutupKotak()">Tutup</button>');
+}
 
 /* ============ TOAST ============ */
 let tO;
@@ -952,5 +1037,6 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a286a0617a54fd1b',t:'MTc4NjI3NzA5OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a286d2fa5c51f906',t:'MTc4NjI3OTE3Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
+</body>
 </html>
