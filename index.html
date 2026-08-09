@@ -137,6 +137,14 @@ box-shadow:0 2px 9px rgba(13,59,87,.08)}
 .tb tr:nth-child(even) td{background:#f7fafc}
 .kosong{text-align:center;color:#7c95a6;font-size:13px;padding:28px 12px;background:#fff;border-radius:12px}
 .cari{margin-bottom:10px}
+#tirai{position:fixed;inset:0;background:rgba(8,26,40,.82);z-index:300;
+  display:none;align-items:center;justify-content:center;flex-direction:column;padding:20px;text-align:center}
+#tirai.on{display:flex}
+#tirai .spin{width:54px;height:54px;border:5px solid rgba(255,255,255,.25);
+  border-top-color:#fff;border-radius:50%;animation:sp .9s linear infinite;margin-bottom:16px}
+@keyframes sp{to{transform:rotate(360deg)}}
+#tiraiJudul{color:#fff;font-size:17px;font-weight:700;margin-bottom:6px}
+#tiraiSub{color:#bcd4e4;font-size:13.5px;line-height:1.5;max-width:320px}
 .modalbg{position:fixed;inset:0;background:rgba(8,26,40,.72);z-index:200;
   display:none;align-items:center;justify-content:center;padding:18px;overflow:auto}
 .modalbg.on{display:flex}
@@ -282,6 +290,9 @@ opacity:0;pointer-events:none;transition:.28s;z-index:90;box-shadow:0 6px 20px r
   <p class="ft">SMP Negeri 1 Bangsal &middot; Kabupaten Mojokerto</p>
 </div></section>
 
+<div id="tirai"><div class="spin"></div>
+  <div id="tiraiJudul"></div><div id="tiraiSub"></div></div>
+
 <div class="modalbg" id="modalKirim"><div class="mk" id="modalIsi"></div></div>
 
 <div id="toast"></div>
@@ -347,9 +358,9 @@ const GURU=[
 
 const MAPEL=['Bahasa Indonesia','Bahasa Inggris','Bahasa Jawa','Bimbingan Konseling','IPA','IPS','Informatika/KKA','Informatika/Koding','Matematika','PAI','PJOK','Pendidikan Pancasila','Seni Budaya'];
 
-const KELAS=['VII A','VII B','VII C','VII D','VII E','VII F',
- 'VIII A','VIII B','VIII C','VIII D','VIII E','VIII F',
- 'IX A','IX B','IX C','IX D','IX E','IX F'];
+const KELAS=['VII A','VII B','VII C','VII D','VII E','VII F','VII G','VII H',
+ 'VIII A','VIII B','VIII C','VIII D','VIII E','VIII F','VIII G','VIII H',
+ 'IX A','IX B','IX C','IX D','IX E','IX F','IX G','IX H'];
 
 /* ============ INSTRUMEN SUPERVISI ============
    INSTRUMEN SUPERVISI PERENCANAAN PEMBELAJARAN
@@ -563,12 +574,14 @@ function hapusFoto(i){FOTO.splice(i,1);tampilPratinjau();
 function unggahFoto(rec,selesai,gagal){
  if(!FOTO.length){selesai('');return;}
  let ke=0, folder='', gagalFoto=0;
+ tirai('Mengunggah foto 1 dari '+FOTO.length+'…','Mohon jangan tutup halaman ini.');
  function berikutnya(){
   if(ke>=FOTO.length){
-    if(gagalFoto)toast(gagalFoto+' foto gagal diunggah (sinyal lemah) — data tetap dikirim');
+    tirai(false);
+    if(gagalFoto)toast(gagalFoto+' foto gagal diunggah — penilaian tetap dikirim');
     selesai(folder);return;}
   const f=FOTO[ke];
-  toast('Mengunggah foto '+(ke+1)+' dari '+FOTO.length+'…');
+  tirai('Mengunggah foto '+(ke+1)+' dari '+FOTO.length+'…','Mohon jangan tutup halaman ini.');
   kirimSatu({aksi:'foto',guru:rec.guru,kelas:rec.kelas,tgl:rec.tgl,foto:[f]},
    function(r){ if(r&&r.folder)folder=r.folder; ke++; berikutnya(); },
    function(){ gagalFoto++; ke++; berikutnya(); });   /* gagal 1 foto -> lanjut sisanya */
@@ -576,30 +589,41 @@ function unggahFoto(rec,selesai,gagal){
  berikutnya();
 }
 
-/* kirim satu muatan lewat form tersembunyi ke iframe */
+/* ============ KIRIM SATU FOTO ============
+   Dulu memakai form tersembunyi + iframe. Di HP, cara itu sering
+   membuat halaman ikut berpindah / tertutup sendiri.
+   Sekarang memakai fetch(), jauh lebih aman. */
 function kirimSatu(muatan,ok,gagal){
- const nm='ifr_'+Math.random().toString(36).slice(2,9);
- const ifr=document.createElement('iframe');ifr.name=nm;ifr.style.display='none';
- const frm=document.createElement('form');
- frm.method='POST';frm.action=CFG.url;frm.target=nm;frm.style.display='none';
- frm.enctype='application/x-www-form-urlencoded';
- const inp=document.createElement('input');
- inp.type='hidden';inp.name='payload';inp.value=JSON.stringify(muatan);
- frm.appendChild(inp);
- document.body.appendChild(ifr);document.body.appendChild(frm);
- let kelar=false;
- function bersih(){try{document.body.removeChild(ifr);document.body.removeChild(frm)}catch(e){}
-   window.removeEventListener('message',dengar);clearTimeout(jam);}
- function dengar(ev){
-  if(kelar)return;
-  let r=null;
-  try{ r=(typeof ev.data==='string')?JSON.parse(ev.data):ev.data; }catch(e){return;}
-  if(r&&r.status==='ok'){kelar=true;bersih();ok(r);}
+ const badan=JSON.stringify(muatan);
+ let sudah=false;
+ const beres=function(r){ if(sudah)return; sudah=true; ok(r||{status:'ok'}); };
+ const rusak=function(){ if(sudah)return; sudah=true; if(gagal)gagal(); };
+
+ /* Cara 1: fetch biasa — bisa membaca balasan Google */
+ try{
+   const jam=setTimeout(function(){ if(!sudah)caraKedua(); },70000);
+   fetch(CFG.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:badan})
+    .then(function(res){ return res.text(); })
+    .then(function(t){
+      clearTimeout(jam);
+      let r=null; try{ r=JSON.parse(t); }catch(e){}
+      if(r&&r.status==='ok') beres(r); else caraKedua();
+    })
+    .catch(function(){ clearTimeout(jam); caraKedua(); });
+ }catch(e){ caraKedua(); }
+
+ /* Cara 2: kirim tanpa membaca balasan (dipakai bila cara 1 dihalangi) */
+ function caraKedua(){
+  if(sudah)return;
+  try{
+    fetch(CFG.url,{method:'POST',mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},body:badan})
+     .then(function(){ beres({status:'ok',buta:true}); })
+     .catch(function(){ rusak(); });
+  }catch(e){ rusak(); }
  }
- window.addEventListener('message',dengar);
- const jam=setTimeout(function(){ if(!kelar){kelar=true;bersih();if(gagal)gagal();} },45000);
- frm.submit();
 }
+
 function renderPD(){
  document.getElementById('boxPD').innerHTML=INSTRUMEN.map(b=>`
   <div class="grup">
@@ -920,6 +944,7 @@ function jsonpUlang(params,ok,gagal,maks,pesan){
 function kirimSheets(rec,ok){
  if(!CFG.url){alert('URL Apps Script belum diisi.\nBuka file ini, cari CFG.url, lalu tempel URL Web App.');return;}
  simpanAntre(rec);                         /* disimpan dulu di HP, aman */
+ tirai('Mengirim data ke Kepala Sekolah…','Mohon tunggu, jangan tutup halaman ini.');
  jsonpUlang({aksi:'simpan',payload:JSON.stringify(rec)},function(r){
    if(r&&r.status==='ok'){hapusAntre(rec.id);if(ok)ok(true);}
    else{kotakGagal('Google menolak menyimpan: '+((r&&r.pesan)||'tidak diketahui'));if(ok)ok(false);}
@@ -968,9 +993,20 @@ function kirimAntre(){
 function ambilSheets(ok,gagal){ jsonp({aksi:'daftar'},ok,gagal); }
 
 
+/* ============ TIRAI SIBUK ============ */
+function tirai(judul,sub){
+ const t=document.getElementById('tirai');
+ if(!t)return;
+ if(judul===false){t.classList.remove('on');return;}
+ document.getElementById('tiraiJudul').textContent=judul;
+ document.getElementById('tiraiSub').textContent=sub||'';
+ t.classList.add('on');
+}
+
 /* ============ KOTAK PEMBERITAHUAN BESAR ============ */
 function tutupKotak(){var m=document.getElementById('modalKirim'); if(m)m.classList.remove('on');}
 function bukaKotak(warna,isi){
+ tirai(false);
  var m=document.getElementById('modalKirim');
  if(!m){alert(isi.replace(/<[^>]+>/g,' '));return;}
  m.className='modalbg on '+warna;
@@ -1037,6 +1073,5 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a286d2fa5c51f906',t:'MTc4NjI3OTE3Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f"}' crossorigin="anonymous"></script>
 </body>
 </html>

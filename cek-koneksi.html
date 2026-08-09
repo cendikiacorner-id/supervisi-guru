@@ -3,60 +3,66 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Cek Koneksi — Supervisi Akademik</title>
+<title>Cek Koneksi v2 — Supervisi Akademik</title>
 <style>
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#eef3f7;margin:0;padding:18px;color:#123}
-.w{max-width:640px;margin:0 auto}
-h1{font-size:20px;color:#0d3b57;margin:0 0 4px}
-p.s{margin:0 0 18px;color:#567;font-size:14px}
+.w{max-width:660px;margin:0 auto}
+h1{font-size:21px;color:#0d3b57;margin:0 0 4px}
+p.s{margin:0 0 16px;color:#567;font-size:14px;line-height:1.5}
 .k{background:#fff;border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.07)}
 .k h2{font-size:15px;margin:0 0 6px;color:#0d3b57}
 .k p{font-size:13px;color:#567;margin:0 0 10px;line-height:1.5}
-button{background:#0d3b57;color:#fff;border:0;border-radius:9px;padding:11px 18px;
-  font-size:14px;font-weight:700;cursor:pointer;width:100%}
+button{background:#0d3b57;color:#fff;border:0;border-radius:9px;padding:12px 18px;
+  font-size:14.5px;font-weight:700;cursor:pointer;width:100%}
 button:hover{background:#155a82}
 button:disabled{background:#9ab;cursor:wait}
+#bAll{background:#1a9e4b;font-size:16px;padding:15px}
+#bAll:hover{background:#15833e}
 .h{margin-top:10px;padding:11px 13px;border-radius:9px;font-size:13.5px;line-height:1.55;display:none}
 .h.on{display:block}
 .ok{background:#e6f7ec;color:#14622f;border-left:4px solid #1a9e4b}
 .no{background:#fdecec;color:#8b1a1a;border-left:4px solid #d33}
 .wt{background:#fff7e0;color:#7a5600;border-left:4px solid #e0a800}
-#akhir{background:#0d3b57;color:#fff;border-radius:14px;padding:18px;display:none;line-height:1.6;font-size:14px}
+#akhir{background:#0d3b57;color:#fff;border-radius:14px;padding:18px;display:none;line-height:1.65;font-size:14px}
 #akhir b{color:#ffd766}
+#akhir ol{margin:8px 0 0;padding-left:20px}
+#akhir li{margin-bottom:6px}
 code{background:#0002;padding:1px 5px;border-radius:4px;font-size:12px;word-break:break-all}
+.cat{font-size:11.5px;color:#89a;margin-top:6px;font-style:italic}
 </style>
 </head>
 <body>
 <div class="w">
-<h1>🩺 Cek Koneksi</h1>
-<p class="s">Halaman ini memeriksa di mana letak masalahnya. Tekan tombolnya berurutan dari atas.</p>
+<h1>🩺 Cek Koneksi <span style="font-size:13px;color:#89a">versi 2</span></h1>
+<p class="s">Versi ini sudah diperbaiki — versi sebelumnya keliru menandai Uji 1 &amp; 3
+selalu hijau. Tekan tombol hijau di bawah, semua uji berjalan otomatis.</p>
 
 <div class="k">
-  <h2>Uji 1 — Internet hidup?</h2>
-  <p>Memeriksa apakah perangkat ini benar-benar tersambung internet.</p>
-  <button id="b1" onclick="uji1()">Jalankan Uji 1</button>
+  <button id="bAll" onclick="jalanSemua()">▶ Jalankan Semua Uji</button>
+  <div class="cat">Perlu waktu sekitar 30–90 detik. Mohon jangan tutup halaman.</div>
+</div>
+
+<div class="k">
+  <h2>Uji 1 — Internet benar-benar hidup?</h2>
+  <p>Memuat gambar sungguhan dari server Google.</p>
   <div class="h" id="h1"></div>
 </div>
 
 <div class="k">
-  <h2>Uji 2 — Google Apps Script terjangkau?</h2>
-  <p>Ini pintu pertama. Alamatnya <code>script.google.com</code></p>
-  <button id="b2" onclick="uji2()">Jalankan Uji 2</button>
+  <h2>Uji 2 — Server Google umum terjangkau?</h2>
+  <p>Menguji <code>www.google.com</code> — untuk memastikan bukan Google-nya yang diblokir seluruhnya.</p>
   <div class="h" id="h2"></div>
 </div>
 
 <div class="k">
-  <h2>Uji 3 — Pintu kedua Google terjangkau?</h2>
-  <p>Google selalu melempar ke alamat kedua <code>script.googleusercontent.com</code>.
-     Banyak jaringan sekolah / operator seluler memblokir alamat ini. Inilah tersangka utamanya.</p>
-  <button id="b3" onclick="uji3()">Jalankan Uji 3</button>
+  <h2>Uji 3 — Apps Script terjangkau?</h2>
+  <p>Menguji <code>script.google.com</code>, tempat aplikasi supervisi menyimpan data.</p>
   <div class="h" id="h3"></div>
 </div>
 
 <div class="k">
-  <h2>Uji 4 — Coba kirim data sungguhan</h2>
-  <p>Mengirim satu baris bernama <b>CEK KONEKSI</b> ke Google Sheets. Boleh dihapus nanti.</p>
-  <button id="b4" onclick="uji4()">Jalankan Uji 4</button>
+  <h2>Uji 4 — Kirim data sungguhan</h2>
+  <p>Mengirim satu baris bernama <b>CEK KONEKSI</b> ke Google Sheets.</p>
   <div class="h" id="h4"></div>
 </div>
 
@@ -65,117 +71,140 @@ code{background:#0002;padding:1px 5px;border-radius:4px;font-size:12px;word-brea
 
 <script>
 var URL_APP='https://script.google.com/macros/s/AKfycbzxWiKYv7rzFh5II2_egEk-h5Ydhe2ri8bBKJFCDPCUkhrtIokyl2k8SUqQljpsnrMzTA/exec';
-var hasil={};
+var H={};
 
 function tulis(n,kelas,teks){
   var d=document.getElementById('h'+n);
   d.className='h on '+kelas; d.innerHTML=teks;
 }
-function sibuk(n,on){
-  var b=document.getElementById('b'+n);
-  b.disabled=on; if(on){b.dataset.t=b.textContent;b.textContent='⏳ Sedang menguji…';}
-  else b.textContent=b.dataset.t||('Jalankan Uji '+n);
+function dtk(ms){return (ms/1000).toFixed(1)+' detik';}
+
+/* ---- muat GAMBAR sungguhan: hanya onload = berhasil ---- */
+function ujiGambar(src,batas,selesai){
+  var img=new Image(), kelar=false, mulai=Date.now();
+  var jam=setTimeout(function(){
+    if(kelar)return; kelar=true; img.src='';
+    selesai({ok:false,sebab:'waktu habis',ms:Date.now()-mulai});
+  },batas);
+  img.onload=function(){
+    if(kelar)return; kelar=true; clearTimeout(jam);
+    selesai({ok:true,ms:Date.now()-mulai});
+  };
+  img.onerror=function(){
+    if(kelar)return; kelar=true; clearTimeout(jam);
+    selesai({ok:false,sebab:'ditolak',ms:Date.now()-mulai});
+  };
+  img.src=src+(src.indexOf('?')<0?'?':'&')+'_t='+Date.now();
 }
 
-/* pemanggil JSONP dengan pencatat waktu */
-function panggil(url,ok,gagal,batas){
+/* ---- JSONP sungguhan ---- */
+function ujiJsonp(url,batas,selesai){
   var cb='ck_'+Math.random().toString(36).slice(2,9);
-  var sc=document.createElement('script'); var kelar=false; var mulai=Date.now();
-  window[cb]=function(r){kelar=true;var d=Date.now()-mulai;bersih();ok(r,d);};
+  var sc=document.createElement('script'), kelar=false, mulai=Date.now();
   function bersih(){try{delete window[cb]}catch(e){window[cb]=undefined}
-    if(sc.parentNode)sc.parentNode.removeChild(sc);clearTimeout(jam);}
-  var jam=setTimeout(function(){if(!kelar){kelar=true;bersih();gagal('waktu habis',Date.now()-mulai);}},batas||60000);
-  sc.onerror=function(){if(!kelar){kelar=true;bersih();gagal('ditolak/diblokir',Date.now()-mulai);}};
+    if(sc.parentNode)sc.parentNode.removeChild(sc); clearTimeout(jam);}
+  window[cb]=function(r){ if(kelar)return; kelar=true; var d=Date.now()-mulai; bersih();
+    selesai({ok:true,data:r,ms:d}); };
+  var jam=setTimeout(function(){ if(kelar)return; kelar=true; bersih();
+    selesai({ok:false,sebab:'waktu habis',ms:Date.now()-mulai}); },batas);
+  sc.onerror=function(){ if(kelar)return; kelar=true; bersih();
+    selesai({ok:false,sebab:'ditolak/diputus',ms:Date.now()-mulai}); };
   sc.src=url+(url.indexOf('?')<0?'?':'&')+'_t='+Date.now()+'&callback='+cb;
   document.body.appendChild(sc);
 }
-function dtk(ms){return (ms/1000).toFixed(1)+' detik';}
 
-function uji1(){
-  sibuk(1,true);
-  var img=new Image(); var kelar=false; var mulai=Date.now();
-  var jam=setTimeout(function(){if(!kelar){kelar=true;sibuk(1,false);
-    hasil.n1=false; tulis(1,'no','❌ <b>Tidak ada internet.</b><br>Perangkat ini tidak bisa menjangkau apa pun. Periksa data seluler / WiFi dulu.');}},15000);
-  img.onload=img.onerror=function(){
-    if(kelar)return; kelar=true; clearTimeout(jam); sibuk(1,false);
-    hasil.n1=true;
-    tulis(1,'ok','✅ <b>Internet hidup.</b> Balasan diterima dalam '+dtk(Date.now()-mulai)+'.');
-  };
-  img.src='https://www.gstatic.com/generate_204?t='+Date.now();
+function jalanSemua(){
+  var b=document.getElementById('bAll');
+  b.disabled=true; b.textContent='⏳ Sedang menguji, mohon tunggu…';
+  document.getElementById('akhir').style.display='none';
+  H={};
+  u1();
 }
 
-function uji2(){
-  sibuk(2,true);
-  /* memanggil /exec langsung -- kalau pintu 1 buntu, onerror cepat */
-  panggil(URL_APP,function(r,d){
-    sibuk(2,false); hasil.n2=true;
-    tulis(2,'ok','✅ <b>Tembus.</b> Google Apps Script menjawab dalam '+dtk(d)+'.<br>'+
-      '<small>Pesan: '+((r&&r.pesan)||'-')+'</small>');
-  },function(sebab,d){
-    sibuk(2,false); hasil.n2=false;
-    tulis(2,'no','❌ <b>Gagal ('+sebab+') setelah '+dtk(d)+'.</b><br>'+
-      'Jaringan ini memblokir <code>script.google.com</code>. Coba ganti ke data seluler, '+
-      'atau minta operator sekolah membuka alamat tersebut.');
-  },60000);
+function u1(){
+  tulis(1,'wt','⏳ Menguji…');
+  ujiGambar('https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png',15000,function(r){
+    H.n1=r.ok;
+    if(r.ok) tulis(1,'ok','✅ <b>Internet hidup.</b> Gambar termuat dalam '+dtk(r.ms)+'.');
+    else tulis(1,'no','❌ <b>Internet bermasalah</b> ('+r.sebab+', '+dtk(r.ms)+').<br>Periksa data seluler / WiFi.');
+    u2();
+  });
 }
-
-function uji3(){
-  sibuk(3,true);
-  var mulai=Date.now(); var kelar=false;
-  var img=new Image();
-  var jam=setTimeout(function(){if(!kelar){kelar=true;sibuk(3,false);hasil.n3=false;
-    tulis(3,'no','❌ <b>Tidak menjawab dalam 20 detik.</b><br>'+
-      'Besar kemungkinan <code>script.googleusercontent.com</code> <b>DIBLOKIR</b> di jaringan ini. '+
-      'Inilah penyebab pengiriman selalu gagal.');}},20000);
-  img.onload=img.onerror=function(){
-    if(kelar)return;kelar=true;clearTimeout(jam);sibuk(3,false);hasil.n3=true;
-    tulis(3,'ok','✅ <b>Terjangkau</b> dalam '+dtk(Date.now()-mulai)+'. Alamat kedua tidak diblokir.');
-  };
-  img.src='https://script.googleusercontent.com/favicon.ico?t='+Date.now();
+function u2(){
+  tulis(2,'wt','⏳ Menguji…');
+  ujiGambar('https://www.google.com/favicon.ico',15000,function(r){
+    H.n2=r.ok;
+    if(r.ok) tulis(2,'ok','✅ <b>Google terjangkau</b> dalam '+dtk(r.ms)+'.');
+    else tulis(2,'no','❌ <b>Google tidak terjangkau</b> ('+r.sebab+', '+dtk(r.ms)+').');
+    u3();
+  });
 }
-
-function uji4(){
-  sibuk(4,true);
+function u3(){
+  tulis(3,'wt','⏳ Menguji… (bisa sampai 45 detik)');
+  ujiJsonp(URL_APP,45000,function(r){
+    H.n3=r.ok; H.s3=r.sebab; H.t3=r.ms;
+    if(r.ok) tulis(3,'ok','✅ <b>Apps Script menjawab</b> dalam '+dtk(r.ms)+'.<br>'+
+      '<small>Pesan: '+((r.data&&r.data.pesan)||'-')+'</small>');
+    else tulis(3,'no','❌ <b>Gagal</b> ('+r.sebab+') setelah '+dtk(r.ms)+'.<br>'+
+      'Jaringan ini kemungkinan <b>memblokir</b> <code>script.google.com</code>.');
+    u4();
+  });
+}
+function u4(){
+  tulis(4,'wt','⏳ Mengirim data uji… (bisa sampai 45 detik)');
   var rec={id:'CEK'+Date.now(),tahap:'uji koneksi',guru:'CEK KONEKSI',nip:'-',
     mapel:'-',kelas:'-',tgl:new Date().toISOString().slice(0,10),
-    materi:'uji dari halaman cek-koneksi',catatanGuru:'',
+    materi:'uji dari cek-koneksi v2',catatanGuru:'',
     pd:{_total:0,_terisi:0},waktu:new Date().toISOString()};
   var url=URL_APP+'?aksi=simpan&payload='+encodeURIComponent(JSON.stringify(rec));
-  panggil(url,function(r,d){
-    sibuk(4,false); hasil.n4=(r&&r.status==='ok');
-    if(hasil.n4) tulis(4,'ok','🎉 <b>BERHASIL!</b> Data masuk ke Google Sheets dalam '+dtk(d)+'.<br>'+
-      'Berarti aplikasi supervisi seharusnya bisa dipakai normal dari perangkat ini.');
-    else tulis(4,'wt','⚠️ Terhubung, tapi Google menolak menyimpan.<br><small>'+((r&&r.pesan)||'-')+'</small>');
-    simpul();
-  },function(sebab,d){
-    sibuk(4,false); hasil.n4=false;
-    tulis(4,'no','❌ <b>Gagal ('+sebab+') setelah '+dtk(d)+'.</b>');
-    simpul();
-  },60000);
+  ujiJsonp(url,45000,function(r){
+    H.n4=!!(r.ok&&r.data&&r.data.status==='ok');
+    if(H.n4) tulis(4,'ok','🎉 <b>BERHASIL!</b> Data masuk ke Google Sheets dalam '+dtk(r.ms)+'.');
+    else if(r.ok) tulis(4,'wt','⚠️ Tersambung tapi ditolak: '+((r.data&&r.data.pesan)||'-'));
+    else tulis(4,'no','❌ <b>Gagal</b> ('+r.sebab+') setelah '+dtk(r.ms)+'.');
+    selesaiSemua();
+  });
 }
 
-function simpul(){
+function selesaiSemua(){
+  var b=document.getElementById('bAll');
+  b.disabled=false; b.textContent='▶ Ulangi Semua Uji';
   var a=document.getElementById('akhir'); a.style.display='block';
   var t='<b>📋 KESIMPULAN</b><br><br>';
-  if(hasil.n4){
-    t+='Jaringan ini <b>BAIK</b>. Silakan pakai aplikasi supervisi seperti biasa. '+
-       'Kalau tadi gagal, kemungkinan sinyal sedang turun sesaat saja.';
-  } else if(hasil.n1===false){
-    t+='Masalahnya <b>internet mati</b>. Nyalakan data seluler atau sambungkan WiFi.';
-  } else if(hasil.n2===false){
-    t+='Jaringan ini <b>memblokir Google Apps Script</b>. Solusi tercepat: '+
-       'matikan WiFi sekolah, pakai <b>data seluler HP</b>, lalu coba lagi.';
-  } else if(hasil.n3===false){
-    t+='Pintu pertama Google terbuka, tapi <b>pintu kedua diblokir</b> '+
-       '(<code>script.googleusercontent.com</code>). Ini khas jaringan sekolah / '+
-       'beberapa operator. Solusi: pakai <b>data seluler operator lain</b>, '+
-       'atau minta admin jaringan sekolah membuka alamat itu.';
+
+  if(H.n4){
+    t+='🎉 Jaringan ini <b>BAIK dan aplikasi berfungsi</b>.<br>'+
+       'Silakan pakai aplikasi supervisi seperti biasa. Kegagalan sebelumnya '+
+       'kemungkinan hanya sinyal turun sesaat.';
+  } else if(!H.n1){
+    t+='Perangkat ini <b>tidak tersambung internet</b>. Nyalakan data seluler atau WiFi.';
+  } else if(!H.n2){
+    t+='Internet hidup, tapi <b>seluruh layanan Google diblokir</b> di jaringan ini. '+
+       'Ini biasanya jaringan sekolah/kantor dengan penyaring ketat. Ganti ke data seluler.';
+  } else if(!H.n3){
+    t+='Internet hidup ✅ dan Google umum terjangkau ✅, '+
+       'tetapi <b>'+'<code>script.google.com</code> DIBLOKIR</b> di jaringan ini '+
+       '(gagal: '+(H.s3||'-')+').<br><br>'+
+       '<b>Yang harus dilakukan — coba berurutan:</b>'+
+       '<ol>'+
+       '<li>Matikan WiFi, pakai <b>data seluler HP</b>, lalu ulangi uji ini.</li>'+
+       '<li>Kalau data seluler juga gagal: coba <b>kartu operator lain</b> '+
+       '(Telkomsel / XL / Indosat sering berbeda kebijakan).</li>'+
+       '<li>Coba peramban lain (Chrome / Firefox / Edge).</li>'+
+       '<li>Matikan mode hemat data / VPN / pemblokir iklan bila ada.</li>'+
+       '<li>Kalau di sekolah: minta admin jaringan membuka '+
+       '<code>script.google.com</code> dan <code>script.googleusercontent.com</code>.</li>'+
+       '</ol>';
   } else {
-    t+='Sambungan tersambung tapi <b>terputus di tengah jalan</b> — ciri khas sinyal lemah/tidak stabil. '+
-       'Coba di tempat yang sinyalnya penuh, atau tunggu beberapa saat lalu ulangi.';
+    t+='Apps Script terjangkau ✅ tapi <b>penyimpanan data gagal</b>. '+
+       'Sambungan kemungkinan terputus di tengah jalan (sinyal tidak stabil). '+
+       'Coba lagi di tempat bersinyal penuh.';
   }
+  t+='<br><br><small style="opacity:.75">Ringkasan: '+
+     'Uji1='+(H.n1?'✅':'❌')+' · Uji2='+(H.n2?'✅':'❌')+
+     ' · Uji3='+(H.n3?'✅':'❌')+' · Uji4='+(H.n4?'✅':'❌')+'</small>';
   a.innerHTML=t;
 }
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a286b9a72e0b1984',t:'MTc4NjI3ODEzNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

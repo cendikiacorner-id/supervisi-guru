@@ -1,0 +1,65 @@
+=========================================================
+  APLIKASI SUPERVISI AKADEMIK - SMP NEGERI 1 BANGSAL
+  Versi 4  (9 Agustus 2026)
+=========================================================
+
+ISI PAKET:
+  1. index.html               <- WAJIB diupload ke GitHub
+  2. cek-koneksi.html         <- opsional (alat diagnosa)
+  3. TAMBALAN-APPS-SCRIPT.txt <- WAJIB dikerjakan di Apps Script
+  4. BACA-DULU.txt            <- berkas ini
+
+---------------------------------------------------------
+YANG BARU DI VERSI 4
+---------------------------------------------------------
+
+1. DAFTAR KELAS kini A sampai H  (24 kelas)
+   VII A-H  |  VIII A-H  |  IX A-H
+   Sebelumnya hanya A-F (18 kelas).
+
+2. HALAMAN TIDAK LAGI TERTUTUP SENDIRI saat mengirim foto.
+   Penyebab lama: pengiriman memakai form + iframe, yang di
+   HP dianggap "pindah halaman". Sekarang memakai fetch().
+
+3. TIRAI PROSES. Selama mengirim, layar meredup dan muncul
+   lingkaran berputar dengan tulisan:
+       "Mengunggah foto 1 dari 2..."
+       "Mohon jangan tutup halaman ini."
+   Jadi jelas aplikasi sedang bekerja, bukan menggantung.
+
+4. KOTAK BUKTI KIRIM. Setelah berhasil muncul kotak HIJAU
+   besar di tengah layar berisi:
+       - Nama guru, mapel, kelas, tanggal
+       - Nilai penilaian diri
+       - Waktu kirim (jam:menit:detik)
+       - NOMOR BUKTI, contoh: SUP-12345678
+   Kotak ini TIDAK hilang sendiri, harus ditekan "Tutup".
+
+5. Kotak KUNING bila sinyal lemah (data tidak hilang,
+   ada tombol Kirim Ulang Data Tertunda di bagian atas).
+   Kotak MERAH bila ditolak Google.
+
+6. Foto yang gagal naik tidak lagi membatalkan penilaian.
+
+---------------------------------------------------------
+CARA UPLOAD KE GITHUB
+---------------------------------------------------------
+1. Buka  github.com/cendikiacorner-id/supervisi-guru
+2. Klik  Add file  ->  Upload files
+3. Seret  index.html  (dan cek-koneksi.html bila mau)
+4. Klik  Commit changes
+5. Tunggu 2 menit
+6. Buka  cendikiacorner-id.github.io/supervisi-guru/
+   lalu tekan  Ctrl + Shift + R
+
+JANGAN LUPA kerjakan juga TAMBALAN-APPS-SCRIPT.txt,
+kalau tidak, pengiriman FOTO akan tetap gagal.
+
+---------------------------------------------------------
+CATATAN JARINGAN
+---------------------------------------------------------
+Sudah terbukti aplikasi ini BERHASIL bila dibuka lewat
+DATA SELULER HP. Bila memakai WiFi sekolah dan gagal terus,
+kemungkinan WiFi tersebut memblokir script.google.com.
+Solusi: pakai data seluler, atau minta admin jaringan
+membuka alamat tersebut.
