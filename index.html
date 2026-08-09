@@ -523,14 +523,28 @@ function tampilPratinjau(){
 function hapusFoto(i){FOTO.splice(i,1);tampilPratinjau();
  if(!FOTO.length){const c=document.getElementById('dk1');if(c)c.checked=false;}}
 
-/* unggah foto ke Drive lewat form tersembunyi (aman untuk berkas besar) */
+/* unggah foto ke Drive — dikirim SATU PER SATU agar tidak melebihi batas */
 function unggahFoto(rec,selesai,gagal){
  if(!FOTO.length){selesai('');return;}
- const muatan={aksi:'foto',guru:rec.guru,kelas:rec.kelas,tgl:rec.tgl,foto:FOTO};
+ let ke=0, folder='';
+ function berikutnya(){
+  if(ke>=FOTO.length){selesai(folder);return;}
+  const f=FOTO[ke];
+  toast('Mengunggah foto '+(ke+1)+' dari '+FOTO.length+'…');
+  kirimSatu({aksi:'foto',guru:rec.guru,kelas:rec.kelas,tgl:rec.tgl,foto:[f]},
+   function(r){ if(r&&r.folder)folder=r.folder; ke++; berikutnya(); },
+   function(){ ke++; berikutnya(); });   /* gagal 1 foto -> lanjut sisanya */
+ }
+ berikutnya();
+}
+
+/* kirim satu muatan lewat form tersembunyi ke iframe */
+function kirimSatu(muatan,ok,gagal){
  const nm='ifr_'+Math.random().toString(36).slice(2,9);
  const ifr=document.createElement('iframe');ifr.name=nm;ifr.style.display='none';
  const frm=document.createElement('form');
  frm.method='POST';frm.action=CFG.url;frm.target=nm;frm.style.display='none';
+ frm.enctype='application/x-www-form-urlencoded';
  const inp=document.createElement('input');
  inp.type='hidden';inp.name='payload';inp.value=JSON.stringify(muatan);
  frm.appendChild(inp);
@@ -540,12 +554,12 @@ function unggahFoto(rec,selesai,gagal){
    window.removeEventListener('message',dengar);clearTimeout(jam);}
  function dengar(ev){
   if(kelar)return;
-  try{const r=JSON.parse(ev.data);
-    if(r&&r.status==='ok'){kelar=true;bersih();selesai(r.folder||'');}
-  }catch(e){}
+  let r=null;
+  try{ r=(typeof ev.data==='string')?JSON.parse(ev.data):ev.data; }catch(e){return;}
+  if(r&&r.status==='ok'){kelar=true;bersih();ok(r);}
  }
  window.addEventListener('message',dengar);
- const jam=setTimeout(function(){ if(!kelar){kelar=true;bersih();selesai('');} },60000);
+ const jam=setTimeout(function(){ if(!kelar){kelar=true;bersih();if(gagal)gagal();} },45000);
  frm.submit();
 }
 function renderPD(){
@@ -874,5 +888,5 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a286820f5db5f8ce',t:'MTc4NjI3NTg1Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
