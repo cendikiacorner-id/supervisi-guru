@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Supervisi Akademik — Cendikia Corner</title>
+<title>Supervisi Akademik — SMP Negeri 1 Bangsal</title>
 <meta name="theme-color" content="#0d3b57">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -71,6 +71,27 @@ border:1.6px solid #c5d6e2;border-radius:9px;font-size:13px;font-weight:800;colo
 .tagpd{font-size:11px;background:#f0f4f7;border:1px solid #d8e4ec;padding:5px 10px;border-radius:14px;color:#5a7688}
 .tagpd b{color:#0d3b57}
 /* dokumen */
+.dok1{padding:13px;border:1px solid #d8e4ec;border-radius:12px;margin-bottom:11px;background:#fbfdfe}
+.dok1.foto{border-color:#d9c9e6;background:#fcfaff}
+.dok1.foto .cek1{color:#5b3a86}
+.dok1.foto .tipdok{border-left-color:#c9b3de;background:#f8f4fc}
+.btnfoto{width:100%;font-family:inherit;font-size:14px;font-weight:700;color:#5b3a86;cursor:pointer;
+padding:13px;border-radius:11px;border:1.6px dashed #b9a0d4;background:#fff;transition:.15s}
+.btnfoto:hover{background:#f3ecfa;border-style:solid}
+.pratinjau{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.thumb{position:relative;width:72px;height:72px;border-radius:9px;overflow:hidden;border:1px solid #d9c9e6}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb button{position:absolute;top:2px;right:2px;width:20px;height:20px;border:0;border-radius:50%;
+background:rgba(0,0,0,.62);color:#fff;font-size:12px;line-height:1;cursor:pointer;padding:0}
+.infofoto{width:100%;font-size:11.5px;color:#5b3a86;font-weight:700;margin-top:2px}
+.memuat{font-size:12px;color:#7c95a6;padding:6px 0}
+.cek1{display:flex;align-items:center;gap:9px;margin:0 0 9px;font-weight:700;font-size:13.5px;cursor:pointer;color:#0d3b57}
+.cek1 input{width:19px;height:19px;flex:0 0 auto;cursor:pointer}
+.cek1 em{font-style:normal;font-weight:500;color:#5a7688;font-size:12px}
+.dok1 input[type=url]{width:100%;font-size:13.5px;padding:11px 12px}
+.tipdok{font-size:11.5px;color:#7c95a6;line-height:1.6;margin-top:7px;
+background:#f4f8fb;border-left:3px solid #c5d6e2;padding:8px 11px;border-radius:0 8px 8px 0}
+.tipdok b{color:#0d3b57}
 .dok{display:flex;gap:9px;align-items:center;padding:7px 0;border-bottom:1px solid #eef3f7;flex-wrap:wrap}
 .dok:last-child{border-bottom:0}
 .cek{display:flex;align-items:center;gap:7px;margin:0;flex:0 0 190px;font-weight:600;font-size:12.5px;cursor:pointer}
@@ -169,8 +190,8 @@ opacity:0;pointer-events:none;transition:.28s;z-index:90;box-shadow:0 6px 20px r
   </div>
 
   <div class="kartu">
-    <h2>📎 Kelengkapan Dokumen</h2>
-    <p class="ket">Centang dokumen yang sudah siap. Tautan Google Drive bersifat opsional.</p>
+    <h2>📎 Dokumen &amp; Bukti Supervisi</h2>
+    <p class="ket">Sertakan <b>Modul Ajar/RPP</b> yang ditelaah dan <b>foto proses supervisi di kelas</b>. Tandai bila sudah siap, lalu tempelkan tautannya.</p>
     <div id="boxDok"></div>
   </div>
 
@@ -347,9 +368,14 @@ const SKALA=[
  {n:1, l:'Hampir tidak ada',   w:'#c0392b'}
 ];
 
-/* dokumen yang diunggah tautannya oleh guru */
-const DOKUMEN=['Modul Ajar / RPP','Prota','Prosem','ATP','KKTP',
- 'Jurnal Mengajar','Daftar Nilai','Daftar Hadir','Bahan/Media Ajar','Kisi-kisi & Soal'];
+/* dokumen & bukti yang disertakan guru
+   tipe: 'dok' = berkas perencanaan · 'foto' = dokumentasi kegiatan */
+const DOKUMEN=[
+ {nama:'Modul Ajar / RPP yang disupervisi', tipe:'dok',
+  tip:'Unggah ke Google Drive, atur akses menjadi &ldquo;Siapa saja yang memiliki link&rdquo;, lalu tempelkan tautannya.'},
+ {nama:'Foto Proses Supervisi di Kelas', tipe:'foto',
+  tip:'Kumpulkan foto dalam satu folder Google Drive atau Google Photos, lalu bagikan tautan folder tersebut.'}
+];
 
 /* ============ STATE ============ */
 const KEY='sup_yd_v1';
@@ -424,12 +450,103 @@ function pilihGuru(){
   }
  }
 }
+let FOTO=[];              /* {nama, data} hasil pilihan guru */
+let FOLDER_FOTO='';       /* tautan folder Drive setelah diunggah */
+
 function renderDokumen(){
- document.getElementById('boxDok').innerHTML=DOKUMEN.map((d,i)=>`
-  <div class="dok">
-    <label class="cek"><input type="checkbox" id="dk${i}"><span>${esc(d)}</span></label>
-    <input type="url" id="dl${i}" placeholder="Tautan Google Drive (opsional)">
-  </div>`).join('');
+ document.getElementById('boxDok').innerHTML=DOKUMEN.map((d,i)=>{
+  if(d.tipe==='foto'){
+   return `<div class="dok1 foto">
+     <label class="cek1"><input type="checkbox" id="dk${i}">
+       <span>📷 ${esc(d.nama)} <em>sudah siap</em></span></label>
+     <input type="file" id="pilihFoto" accept="image/*" multiple onchange="pilihFoto(this)" style="display:none">
+     <button type="button" class="btnfoto" onclick="document.getElementById('pilihFoto').click()">
+       📷 Pilih Foto dari Galeri</button>
+     <div id="pratinjau" class="pratinjau"></div>
+     <input type="hidden" id="dl${i}">
+     <div class="tipdok">Pilih maksimal <b>4 foto</b>. Foto otomatis dikecilkan
+       dan tersimpan ke Google Drive sekolah saat formulir dikirim.</div>
+   </div>`;
+  }
+  return `<div class="dok1">
+    <label class="cek1"><input type="checkbox" id="dk${i}">
+      <span>📄 ${esc(d.nama)} <em>sudah siap</em></span></label>
+    <input type="url" id="dl${i}" placeholder="Tempel tautan Google Drive">
+    <div class="tipdok">${d.tip||''}</div>
+  </div>`;
+ }).join('');
+ FOTO=[];FOLDER_FOTO='';
+}
+
+/* pilih & kecilkan foto */
+function pilihFoto(el){
+ const berkas=Array.from(el.files||[]).slice(0,4);
+ if(!berkas.length)return;
+ FOTO=[];
+ const box=document.getElementById('pratinjau');
+ box.innerHTML='<div class="memuat">⏳ Menyiapkan foto…</div>';
+ let selesai=0;
+ berkas.forEach((f,idx)=>{
+  kecilkan(f,function(data){
+   FOTO.push({nama:f.name||('foto-'+(idx+1)+'.jpg'),data:data});
+   selesai++;
+   if(selesai===berkas.length)tampilPratinjau();
+  });
+ });
+}
+function kecilkan(file,selesai){
+ const r=new FileReader();
+ r.onload=function(e){
+  const img=new Image();
+  img.onload=function(){
+   const maks=1280;
+   let w=img.width,h=img.height;
+   if(w>maks||h>maks){ if(w>h){h=Math.round(h*maks/w);w=maks;} else {w=Math.round(w*maks/h);h=maks;} }
+   const c=document.createElement('canvas');c.width=w;c.height=h;
+   c.getContext('2d').drawImage(img,0,0,w,h);
+   selesai(c.toDataURL('image/jpeg',0.72));
+  };
+  img.onerror=function(){selesai(e.target.result)};
+  img.src=e.target.result;
+ };
+ r.readAsDataURL(file);
+}
+function tampilPratinjau(){
+ const box=document.getElementById('pratinjau');
+ if(!FOTO.length){box.innerHTML='';return;}
+ let kb=0;FOTO.forEach(f=>kb+=Math.round(f.data.length*0.75/1024));
+ box.innerHTML=FOTO.map((f,i)=>`<div class="thumb">
+   <img src="${f.data}" alt=""><button type="button" onclick="hapusFoto(${i})">✕</button></div>`).join('')
+   +`<div class="infofoto">${FOTO.length} foto dipilih · ±${kb} KB</div>`;
+ const c=document.getElementById('dk1'); if(c)c.checked=true;
+}
+function hapusFoto(i){FOTO.splice(i,1);tampilPratinjau();
+ if(!FOTO.length){const c=document.getElementById('dk1');if(c)c.checked=false;}}
+
+/* unggah foto ke Drive lewat form tersembunyi (aman untuk berkas besar) */
+function unggahFoto(rec,selesai,gagal){
+ if(!FOTO.length){selesai('');return;}
+ const muatan={aksi:'foto',guru:rec.guru,kelas:rec.kelas,tgl:rec.tgl,foto:FOTO};
+ const nm='ifr_'+Math.random().toString(36).slice(2,9);
+ const ifr=document.createElement('iframe');ifr.name=nm;ifr.style.display='none';
+ const frm=document.createElement('form');
+ frm.method='POST';frm.action=CFG.url;frm.target=nm;frm.style.display='none';
+ const inp=document.createElement('input');
+ inp.type='hidden';inp.name='payload';inp.value=JSON.stringify(muatan);
+ frm.appendChild(inp);
+ document.body.appendChild(ifr);document.body.appendChild(frm);
+ let kelar=false;
+ function bersih(){try{document.body.removeChild(ifr);document.body.removeChild(frm)}catch(e){}
+   window.removeEventListener('message',dengar);clearTimeout(jam);}
+ function dengar(ev){
+  if(kelar)return;
+  try{const r=JSON.parse(ev.data);
+    if(r&&r.status==='ok'){kelar=true;bersih();selesai(r.folder||'');}
+  }catch(e){}
+ }
+ window.addEventListener('message',dengar);
+ const jam=setTimeout(function(){ if(!kelar){kelar=true;bersih();selesai('');} },60000);
+ frm.submit();
 }
 function renderPD(){
  document.getElementById('boxPD').innerHTML=INSTRUMEN.map(b=>`
@@ -467,19 +584,27 @@ function kirimGuru(){
  if(!g||!m||!k||!t){alert('Lengkapi nama, mata pelajaran, kelas, dan tanggal.');return;}
  const pd=kumpulkanPD();
  if(pd._terisi===0 && !confirm('Penilaian diri belum diisi. Tetap kirim?'))return;
- const dok=DOKUMEN.map((d,i)=>({nama:d,
-   siap:document.getElementById('dk'+i).checked,
-   link:document.getElementById('dl'+i).value.trim()}));
  const rec={id:idBaru(),tahap:'diisi guru',guru:g,nip:document.getElementById('fNip').value.trim(),
    mapel:m,kelas:k,tgl:t,
    materi:mat, catatanGuru:document.getElementById('fCatatan').value.trim(),
-   dok:dok, pd:pd, waktu:new Date().toISOString()};
+   pd:pd, waktu:new Date().toISOString()};
  ST.guru=g;simpan();
- kirimSheets(rec,function(){
-   toast('Berhasil dikirim ke Kepala Sekolah');
-   document.getElementById('fCatatan').value='';document.getElementById('fMateri').value='';
-   renderPD();renderDokumen();
- });
+
+ const lanjut=function(folder){
+   FOLDER_FOTO=folder||'';
+   rec.folderFoto=FOLDER_FOTO;
+   rec.dok=DOKUMEN.map((d,i)=>({nama:d.nama,tipe:d.tipe,
+     siap:document.getElementById('dk'+i).checked,
+     link:d.tipe==='foto'?FOLDER_FOTO:(document.getElementById('dl'+i).value||'').trim()}));
+   kirimSheets(rec,function(){
+     toast('Berhasil dikirim ke Kepala Sekolah');
+     document.getElementById('fCatatan').value='';document.getElementById('fMateri').value='';
+     renderPD();renderDokumen();
+   });
+ };
+
+ if(FOTO.length){ toast('Mengunggah '+FOTO.length+' foto…'); unggahFoto(rec,lanjut); }
+ else lanjut('');
 }
 
 /* ============ DAFTAR BERKAS ============ */
@@ -526,10 +651,11 @@ function buka(id){
  if(x.materi)h+=`<div class="info">📖 <b>Materi:</b> ${esc(x.materi)}</div>`;
  /* dokumen */
  const dok=x.dok||[];
- h+=`<div class="grup"><div class="ghead">📎 Kelengkapan Dokumen</div>`;
+ h+=`<div class="grup"><div class="ghead">📎 Dokumen &amp; Bukti Supervisi</div>`;
  h+=dok.length?dok.map(d=>`<div class="drow">
-    <span>${d.siap?'✅':'⬜'} ${esc(d.nama)}</span>
-    ${d.link?`<a href="${esc(d.link)}" target="_blank" rel="noopener">Lihat</a>`:'<em>—</em>'}
+    <span>${d.siap?'✅':'⬜'} ${d.tipe==='foto'?'📷':'📄'} ${esc(d.nama)}</span>
+    ${d.link?`<a href="${esc(d.link)}" target="_blank" rel="noopener">${d.tipe==='foto'?'🖼️ Lihat Foto':'📂 Buka Dokumen'}</a>`
+            :'<em>tautan belum disertakan</em>'}
    </div>`).join(''):'<div class="drow"><em>Tidak ada data</em></div>';
  h+=`</div>`;
  /* instrumen */
@@ -623,7 +749,9 @@ function cetak(){
      <td class="c">${ck(1)}</td><td class="c">${ck(2)}</td><td class="c">${ck(3)}</td><td class="c">${ck(4)}</td></tr>`;
   });
  });
- const dok=(x.dok||[]).map(d=>`<li>${d.siap?'✔':'✗'} ${esc(d.nama)}${d.link?' — ada tautan':''}</li>`).join('');
+ const _dk=(x.dok||[]);
+ const dok=_dk.filter(d=>d.tipe!=='foto').map(d=>`${d.siap?'✔':'✗'} ${esc(d.nama)}${d.link?' (tautan disertakan)':''}`).join('; ');
+ const fto=_dk.filter(d=>d.tipe==='foto').map(d=>`${d.siap?'✔':'✗'} ${esc(d.nama)}${d.link?' (tautan disertakan)':''}`).join('; ');
  const w=window.open('','_blank');
  w.document.write(`<!DOCTYPE html><html lang="id"><head><meta charset="utf-8">
  <title>Hasil Supervisi — ${esc(x.guru)}</title><style>
@@ -656,9 +784,9 @@ function cetak(){
   <tr><td>Kelas</td><td>: ${esc(x.kelas)}</td></tr>
   <tr><td>Hari / Tanggal</td><td>: ${tglID(x.tgl)}</td></tr>
   <tr><td>Materi</td><td>: ${esc(x.materi||'-')}</td></tr>
+  <tr><td>Dokumen</td><td>: ${dok||'-'}</td></tr>
+  <tr><td>Dokumentasi</td><td>: ${fto||'-'}</td></tr>
  </table>
- <h3 style="font-size:11pt;margin:12px 0 4px">Kelengkapan Dokumen</h3>
- <ul>${dok||'<li>—</li>'}</ul>
  <p style="font-size:9.5pt;margin:10px 0 4px">Skala: <b>1</b> = Hampir tidak ada &nbsp; <b>2</b> = Sedikit dan lemah &nbsp; <b>3</b> = Cukup &nbsp; <b>4</b> = Memadai</p>
  <table><thead><tr><th rowspan="2" style="width:28px">No</th><th rowspan="2">Aspek yang Diamati</th>
  <th colspan="4">Skala</th></tr>
