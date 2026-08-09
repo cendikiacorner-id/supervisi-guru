@@ -137,6 +137,12 @@ box-shadow:0 2px 9px rgba(13,59,87,.08)}
 .tb tr:nth-child(even) td{background:#f7fafc}
 .kosong{text-align:center;color:#7c95a6;font-size:13px;padding:28px 12px;background:#fff;border-radius:12px}
 .cari{margin-bottom:10px}
+#barAntre{position:sticky;top:52px;z-index:60;background:#fff4d6;border-bottom:2px solid #e0a800;
+  padding:10px 14px;font-size:13.5px;color:#6b4b00;display:flex;gap:10px;align-items:center;
+  justify-content:center;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+#barAntre button{background:#e0a800;color:#fff;border:0;border-radius:8px;padding:7px 14px;
+  font-size:13px;font-weight:700;cursor:pointer}
+#barAntre button:hover{background:#c79200}
 #toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);
 background:#0d3b57;color:#fff;font-size:13px;font-weight:700;padding:11px 20px;border-radius:22px;
 opacity:0;pointer-events:none;transition:.28s;z-index:90;box-shadow:0 6px 20px rgba(0,0,0,.3)}
@@ -154,6 +160,8 @@ opacity:0;pointer-events:none;transition:.28s;z-index:90;box-shadow:0 6px 20px r
   <div class="sp"></div>
   <button onclick="keluar()">Keluar</button>
 </div></div>
+
+<div id="barAntre" style="display:none"></div>
 
 <!-- ===== LOGIN ===== -->
 <section class="scr on" id="scrLogin">
@@ -526,14 +534,16 @@ function hapusFoto(i){FOTO.splice(i,1);tampilPratinjau();
 /* unggah foto ke Drive — dikirim SATU PER SATU agar tidak melebihi batas */
 function unggahFoto(rec,selesai,gagal){
  if(!FOTO.length){selesai('');return;}
- let ke=0, folder='';
+ let ke=0, folder='', gagalFoto=0;
  function berikutnya(){
-  if(ke>=FOTO.length){selesai(folder);return;}
+  if(ke>=FOTO.length){
+    if(gagalFoto)toast(gagalFoto+' foto gagal diunggah (sinyal lemah) — data tetap dikirim');
+    selesai(folder);return;}
   const f=FOTO[ke];
   toast('Mengunggah foto '+(ke+1)+' dari '+FOTO.length+'…');
   kirimSatu({aksi:'foto',guru:rec.guru,kelas:rec.kelas,tgl:rec.tgl,foto:[f]},
    function(r){ if(r&&r.folder)folder=r.folder; ke++; berikutnya(); },
-   function(){ ke++; berikutnya(); });   /* gagal 1 foto -> lanjut sisanya */
+   function(){ gagalFoto++; ke++; berikutnya(); });   /* gagal 1 foto -> lanjut sisanya */
  }
  berikutnya();
 }
@@ -850,7 +860,7 @@ function unduhCSV(){
 }
 
 /* ============ SINKRONISASI ============ */
-function jsonp(params,ok,gagal){
+function jsonp(params,ok,gagal,batas){
  if(!CFG.url){if(gagal)gagal();return;}
  const cb='sp_'+Math.random().toString(36).slice(2,9);
  const q=Object.keys(params).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(params[k])).join('&');
@@ -858,17 +868,70 @@ function jsonp(params,ok,gagal){
  window[cb]=function(r){kelar=true;try{if(ok)ok(r)}finally{bersih()}};
  function bersih(){try{delete window[cb]}catch(e){window[cb]=undefined}
    if(sc.parentNode)sc.parentNode.removeChild(sc);clearTimeout(jam);}
- const jam=setTimeout(()=>{if(!kelar){bersih();if(gagal)gagal()}},15000);
- sc.onerror=()=>{if(!kelar){bersih();if(gagal)gagal()}};
- sc.src=CFG.url+'?'+q+'&callback='+cb;
+ const jam=setTimeout(()=>{if(!kelar){kelar=true;bersih();if(gagal)gagal()}},batas||60000);
+ sc.onerror=()=>{if(!kelar){kelar=true;bersih();if(gagal)gagal()}};
+ sc.src=CFG.url+'?'+q+'&_t='+Date.now()+'&callback='+cb;
  document.body.appendChild(sc);
 }
+
+/* kirim dengan pengulangan otomatis bila sinyal putus */
+function jsonpUlang(params,ok,gagal,maks,pesan){
+ const M=maks||4;let ke=0;
+ (function coba(){
+   ke++;
+   if(pesan)toast(ke===1?pesan:(pesan+' (percobaan '+ke+' dari '+M+')…'));
+   jsonp(params,ok,function(){
+     if(ke<M){setTimeout(coba,1500*ke);}   /* jeda makin lama tiap gagal */
+     else if(gagal)gagal(ke);
+   },60000);
+ })();
+}
+
 function kirimSheets(rec,ok){
  if(!CFG.url){alert('URL Apps Script belum diisi.\nBuka file ini, cari CFG.url, lalu tempel URL Web App.');return;}
- toast('Mengirim…');
- jsonp({aksi:'simpan',payload:JSON.stringify(rec)},function(r){
-   if(r&&r.status==='ok'){if(ok)ok();}else{alert('Gagal menyimpan: '+((r&&r.pesan)||'tidak diketahui'));}
- },function(){alert('Gagal mengirim. Periksa koneksi internet.');});
+ simpanAntre(rec);                         /* disimpan dulu di HP, aman */
+ jsonpUlang({aksi:'simpan',payload:JSON.stringify(rec)},function(r){
+   if(r&&r.status==='ok'){hapusAntre(rec.id);if(ok)ok();}
+   else{alert('Gagal menyimpan: '+((r&&r.pesan)||'tidak diketahui'));}
+ },function(){
+   alert('Sinyal internet sedang lemah, pengiriman belum berhasil.\n\n'
+        +'TENANG — isian Anda SUDAH TERSIMPAN di perangkat ini dan tidak hilang.\n'
+        +'Bila sinyal sudah membaik, buka kembali halaman ini lalu tekan tombol '
+        +'"Kirim Ulang Data Tertunda" di bagian atas.');
+   if(ok)ok();
+ },4,'Mengirim…');
+}
+
+/* ====== ANTREAN OFFLINE ====== */
+function ambilAntre(){try{return JSON.parse(localStorage.getItem('sup_antre')||'[]')}catch(e){return[]}}
+function tulisAntre(a){try{localStorage.setItem('sup_antre',JSON.stringify(a))}catch(e){}}
+function simpanAntre(rec){const a=ambilAntre();if(!a.some(x=>x.id===rec.id)){a.push(rec);tulisAntre(a);}tandaAntre();}
+function hapusAntre(id){tulisAntre(ambilAntre().filter(x=>x.id!==id));tandaAntre();}
+function tandaAntre(){
+ const n=ambilAntre().length,b=document.getElementById('barAntre');
+ if(!b)return;
+ if(!n){b.style.display='none';return;}
+ b.style.display='block';
+ b.innerHTML='<span>📥 <b>'+n+'</b> data belum terkirim (tersimpan aman di perangkat ini)</span>'
+   +'<button type="button" onclick="kirimAntre()">Kirim Ulang Data Tertunda</button>';
+}
+function kirimAntre(){
+ const a=ambilAntre();
+ if(!a.length){toast('Tidak ada data tertunda');return;}
+ let ke=0,sukses=0;
+ (function lagi(){
+   if(ke>=a.length){
+     tandaAntre();
+     alert(sukses+' dari '+a.length+' data berhasil dikirim.'
+       +(sukses<a.length?'\n\nSisanya masih tertunda — coba lagi saat sinyal lebih baik.':''));
+     return;
+   }
+   const rec=a[ke];
+   jsonpUlang({aksi:'simpan',payload:JSON.stringify(rec)},function(r){
+     if(r&&r.status==='ok'){hapusAntre(rec.id);sukses++;}
+     ke++;lagi();
+   },function(){ke++;lagi();},3,'Mengirim data tertunda '+(ke+1)+' dari '+a.length);
+ })();
 }
 function ambilSheets(ok,gagal){ jsonp({aksi:'daftar'},ok,gagal); }
 
@@ -885,8 +948,9 @@ document.addEventListener('DOMContentLoaded',function(){
  document.getElementById('thnTxt').textContent=CFG.tahun;
  document.getElementById('inKode').addEventListener('keydown',e=>{if(e.key==='Enter')masuk()});
  if(ST.peran)bukaPeran(); else ke('scrLogin');
+ tandaAntre();
 });
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a286820f5db5f8ce',t:'MTc4NjI3NTg1Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a286a0617a54fd1b',t:'MTc4NjI3NzA5OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
