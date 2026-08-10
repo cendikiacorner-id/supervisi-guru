@@ -183,6 +183,49 @@ box-shadow:0 2px 9px rgba(13,59,87,.08)}
 .rub .rb.aktif{background:#e9f4ff;color:#123;font-weight:600}
 .tglrub{background:none;border:0;color:#0d6ea8;font-size:11.5px;cursor:pointer;
   padding:3px 0;font-weight:600;text-decoration:underline}
+/* ====== BAGAN REKAP ====== */
+.bgn{margin:16px 0 4px}
+.bgn h3{font-size:14px;color:#0d3b57;margin:0 0 10px;padding-bottom:7px;
+  border-bottom:2px solid #eaf1f6;display:flex;align-items:center;gap:7px}
+.bgn h3 em{font-style:normal;font-size:11.5px;color:#8ba0b2;font-weight:400;margin-left:auto}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}
+.pnl{background:#fff;border:1px solid #e6edf3;border-radius:12px;padding:14px}
+
+/* batang mendatar */
+.bar1{display:flex;align-items:center;gap:9px;margin-bottom:8px;font-size:12.5px}
+.bar1 .nm{flex:0 0 108px;color:#4a5b6a;text-align:right;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.bar1 .tr{flex:1;background:#eef3f7;border-radius:6px;height:19px;overflow:hidden}
+.bar1 .fl{height:100%;border-radius:6px;transition:width .5s ease;min-width:2px}
+.bar1 .vl{flex:0 0 54px;font-weight:700;color:#0d3b57;font-size:12px}
+
+/* predikat */
+.prd{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;text-align:center}
+.prd div{border-radius:10px;padding:12px 5px;color:#fff}
+.prd b{display:block;font-size:23px;line-height:1.1}
+.prd span{font-size:10.5px;opacity:.92;display:block;margin-top:3px}
+.pA{background:#1a9e4b}.pB{background:#2a7fb8}.pC{background:#e08e0b}.pD{background:#c0392b}
+
+/* batang tegak per aspek */
+.tgk{display:flex;align-items:flex-end;justify-content:space-around;
+  height:150px;gap:12px;padding:0 4px;border-bottom:2px solid #dde6ed}
+.tgk .kl{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;
+  justify-content:flex-end}
+.tgk .bt2{width:100%;max-width:58px;border-radius:7px 7px 0 0;position:relative;
+  transition:height .5s ease;min-height:3px}
+.tgk .bt2 span{position:absolute;top:-19px;left:0;right:0;text-align:center;
+  font-size:11.5px;font-weight:700;color:#0d3b57}
+.tgk .lb2{margin-top:7px;font-size:11px;color:#5a6b7a;text-align:center;line-height:1.3}
+.ktr{font-size:11.5px;color:#8ba0b2;margin-top:9px;line-height:1.5}
+.kosong2{text-align:center;color:#9aabb8;padding:22px;font-size:13px}
+@media print{.bgn{page-break-inside:avoid}}
+.psaran{display:flex;gap:8px;align-items:center;margin:0 0 7px;flex-wrap:wrap}
+.psaran select{flex:1;min-width:200px;margin:0;padding:9px 10px;font-size:13px;
+  border:1px solid #cfdce6;border-radius:8px;background:#f7fbfe;color:#0d3b57;cursor:pointer}
+.psaran select:hover{background:#eef6fc}
+.psaran .bersih{background:#fff;border:1px solid #dfe7ee;color:#8494a2;
+  padding:8px 12px;border-radius:8px;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.psaran .bersih:hover{border-color:#d33;color:#d33}
 #barAntre{position:sticky;top:52px;z-index:60;background:#fff4d6;border-bottom:2px solid #e0a800;
   padding:10px 14px;font-size:13.5px;color:#6b4b00;display:flex;gap:10px;align-items:center;
   justify-content:center;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.08)}
@@ -298,6 +341,7 @@ opacity:0;pointer-events:none;transition:.28s;z-index:90;box-shadow:0 6px 20px r
     <button class="mini" onclick="ke('scrDaftar')">← Kembali</button>
     <h2 style="margin-top:10px">📊 Rekap Supervisi</h2>
     <div id="ringkas" style="margin-top:10px"></div>
+    <div id="bagan"></div>
     <div id="tblRekap"></div>
     <div class="aksi">
       <button class="btn gh" onclick="unduhCSV()">⬇️ Unduh CSV</button>
@@ -496,6 +540,50 @@ const CATATAN=[
  {k:'perbaikan', l:'Hal yang Perlu Ditingkatkan'},
  {k:'tindak',    l:'Rekomendasi Perbaikan sesuai Prinsip Standar Proses dan Pembelajaran Mendalam'}
 ];
+
+/* pilihan kalimat siap pakai untuk catatan kualitatif.
+   Boleh dipilih lebih dari satu; hasilnya masuk ke kotak isian
+   dan tetap dapat disunting atau diketik sendiri. */
+const SARAN={
+ kelebihan:[
+  'Tujuan pembelajaran dirumuskan jelas, terukur, dan selaras dengan Standar Kompetensi Lulusan serta Dimensi Profil Lulusan.',
+  'Langkah pembelajaran tersusun runtut dan mencerminkan tiga pengalaman belajar: memahami, mengaplikasi, dan merefleksi.',
+  'Prinsip Pembelajaran Mendalam (berkesadaran, bermakna, dan menggembirakan) tergambar pada setiap tahapan pembelajaran.',
+  'Asesmen dirancang lengkap dengan kriteria ketercapaian tujuan pembelajaran (KKTP) yang jelas dan terukur.',
+  'Perencanaan menunjukkan pemahaman yang baik terhadap karakteristik dan kebutuhan belajar Murid.',
+  'Pemanfaatan teknologi dan media pembelajaran direncanakan tepat guna serta mendukung pencapaian tujuan.',
+  'Lingkungan belajar yang aman, nyaman, dan inklusif tergambar jelas dalam perencanaan.',
+  'Modul ajar disusun rapi, sistematis, dan lengkap sesuai ketentuan Standar Proses.',
+  'Terdapat rencana kemitraan pembelajaran yang melibatkan Murid, sesama Guru, serta orang tua/masyarakat.',
+  'Guru menunjukkan komitmen dan kesiapan yang baik dalam menyusun perencanaan pembelajaran.'
+ ],
+ perbaikan:[
+  'Rumusan tujuan pembelajaran perlu dipertajam agar lebih terukur dan selaras dengan Dimensi Profil Lulusan.',
+  'Keselarasan antara tujuan, langkah pembelajaran, dan asesmen perlu diperjelas agar saling mendukung.',
+  'Pengalaman belajar merefleksi belum tampak jelas dan perlu dirancang lebih terarah.',
+  'Kegiatan mengaplikasi perlu dikaitkan dengan konteks kehidupan nyata Murid.',
+  'Kriteria ketercapaian tujuan pembelajaran (KKTP) perlu dilengkapi dan diperjelas.',
+  'Asesmen perlu dirancang agar turut mengukur Dimensi Profil Lulusan, bukan hanya capaian akademik.',
+  'Diferensiasi pembelajaran perlu ditambahkan agar sesuai keragaman kemampuan Murid.',
+  'Pemanfaatan teknologi pembelajaran perlu direncanakan lebih konkret dan tepat sasaran.',
+  'Rencana kemitraan pembelajaran dengan orang tua/masyarakat belum tergambar dan perlu dilengkapi.',
+  'Alokasi waktu tiap tahapan pembelajaran perlu diperinci agar pelaksanaan lebih terarah.',
+  'Sumber belajar perlu diperkaya dan tidak bertumpu pada satu buku teks saja.',
+  'Umpan balik hasil asesmen perlu direncanakan agar dapat memperbaiki proses pembelajaran.'
+ ],
+ tindak:[
+  'Guru disarankan mengkaji ulang rumusan tujuan pembelajaran dengan merujuk Permendikdasmen No. 1 Tahun 2026 tentang Standar Proses.',
+  'Guru disarankan menyempurnakan modul ajar dengan melengkapi KKTP dan instrumen asesmen.',
+  'Guru disarankan merancang kegiatan refleksi terstruktur pada akhir setiap pertemuan.',
+  'Guru disarankan menerapkan pembelajaran berdiferensiasi sesuai kesiapan dan minat Murid.',
+  'Guru disarankan mengikuti kegiatan MGMP atau pelatihan penyusunan perencanaan pembelajaran.',
+  'Guru disarankan melakukan pendampingan sejawat dengan guru serumpun dalam menyusun modul ajar.',
+  'Guru disarankan memanfaatkan Platform Merdeka Mengajar sebagai rujukan penyusunan perencanaan.',
+  'Guru disarankan mendokumentasikan hasil asesmen sebagai dasar perbaikan pembelajaran berikutnya.',
+  'Perencanaan yang telah disusun agar dipertahankan dan dijadikan contoh baik bagi guru lain.',
+  'Supervisi lanjutan akan dilaksanakan untuk memantau penerapan rekomendasi ini di kelas.'
+ ]
+};
 
 /* skala penilaian sesuai instrumen resmi */
 const SKALA=[
@@ -884,11 +972,14 @@ function buka(id){
  h+=`<div class="grup"><div class="ghead">💬 E. Catatan Kualitatif Kepala Sekolah</div>
    ${x.catatanGuru?`<div class="info">Catatan guru: ${esc(x.catatanGuru)}</div>`:''}
    <label class="lb">19. Kelebihan Perencanaan Pembelajaran</label>
-   <textarea id="cKelebihan" rows="3" ${boleh?'':'disabled'}>${esc(x.kelebihan||'')}</textarea>
+   ${pilihanCatatan('kelebihan','cKelebihan',boleh)}
+   <textarea id="cKelebihan" rows="4" ${boleh?'':'disabled'}>${esc(x.kelebihan||'')}</textarea>
    <label class="lb">20. Hal yang Perlu Ditingkatkan</label>
-   <textarea id="cPerbaikan" rows="3" ${boleh?'':'disabled'}>${esc(x.perbaikan||'')}</textarea>
+   ${pilihanCatatan('perbaikan','cPerbaikan',boleh)}
+   <textarea id="cPerbaikan" rows="4" ${boleh?'':'disabled'}>${esc(x.perbaikan||'')}</textarea>
    <label class="lb">21. Rekomendasi Perbaikan sesuai Prinsip Standar Proses dan Pembelajaran Mendalam</label>
-   <textarea id="cTindak" rows="3" ${boleh?'':'disabled'}>${esc(x.tindak||'')}</textarea>
+   ${pilihanCatatan('tindak','cTindak',boleh)}
+   <textarea id="cTindak" rows="4" ${boleh?'':'disabled'}>${esc(x.tindak||'')}</textarea>
    <label class="lb">Nama Supervisor</label>
    <input type="text" id="cSup" value="${esc(x.supervisor||CFG.kepsek)}" ${boleh?'':'disabled'} placeholder="Nama kepala sekolah / supervisor">
    <label class="lb">NIP Supervisor</label>
@@ -901,6 +992,36 @@ function buka(id){
   : `<button class="btn" onclick="cetak()">🖨️ Cetak / Simpan PDF</button>`;
  hitung();ke('scrNilai');
 }
+/* ====== PILIHAN KALIMAT SIAP PAKAI UNTUK CATATAN ====== */
+function pilihanCatatan(jenis,target,boleh){
+ if(!boleh) return '';
+ const d=(typeof SARAN!=='undefined'&&SARAN[jenis])?SARAN[jenis]:[];
+ if(!d.length) return '';
+ return `<div class="psaran">
+   <select id="sel_${target}" onchange="tambahSaran('${target}',this)">
+     <option value="">➕ Pilih kalimat siap pakai…</option>
+     ${d.map((t,i)=>`<option value="${i}">${esc(t)}</option>`).join('')}
+   </select>
+   <button type="button" class="mini bersih" onclick="kosongkanCat('${target}')">Kosongkan</button>
+ </div>`;
+}
+function tambahSaran(target,sel){
+ const jenis={cKelebihan:'kelebihan',cPerbaikan:'perbaikan',cTindak:'tindak'}[target];
+ const i=sel.value; if(i==='')return;
+ const t=SARAN[jenis][Number(i)];
+ const ta=document.getElementById(target);
+ const isi=(ta.value||'').trim();
+ if(isi.indexOf(t)>=0){ sel.value=''; toast('Kalimat itu sudah ada'); return; }
+ ta.value = isi ? (isi.replace(/\s*$/,'')+' '+t) : t;
+ sel.value='';
+ ta.focus();
+}
+function kosongkanCat(target){
+ const ta=document.getElementById(target);
+ if(!ta.value.trim()){return;}
+ if(confirm('Kosongkan isian ini?')) ta.value='';
+}
+
 function hitung(){
  let tot=0,isi=0;
  INSTRUMEN.forEach(b=>{
@@ -1017,6 +1138,101 @@ function cetak(){
 }
 
 /* ============ REKAP (TIM KURIKULUM) ============ */
+/* ============ BAGAN REKAP ============ */
+function warnaNilai(v){
+ return v>=90?'#1a9e4b':v>=80?'#2a7fb8':v>=70?'#e08e0b':'#c0392b';
+}
+function gambarBagan(sudah){
+ const box=document.getElementById('bagan'); if(!box)return;
+ if(!sudah.length){
+   box.innerHTML='<div class="bgn"><div class="pnl"><div class="kosong2">'
+     +'Bagan akan muncul setelah ada guru yang selesai dinilai.</div></div></div>';
+   return;
+ }
+
+ /* --- 1. sebaran predikat --- */
+ let A=0,B=0,C=0,D=0;
+ sudah.forEach(x=>{const v=x.nilai||0; if(v>=90)A++;else if(v>=80)B++;else if(v>=70)C++;else D++;});
+
+ /* --- 2. rata-rata tiap aspek A-D --- */
+ const asp=INSTRUMEN.map(b=>{
+  let jum=0,n=0;
+  sudah.forEach(x=>{
+   const sv=x.sv||{}; let j=0,k=0;
+   b.butir.forEach((bx,i)=>{const v=sv[b.kode+(i+1)]; if(v!=null){j+=v;k++;}});
+   if(k){jum+=(j/k/4*100);n++;}
+  });
+  return {kode:b.kode,judul:b.judul,ikon:b.ikon,bobot:b.bobot,
+          nilai:n?Math.round(jum/n):0,ada:n};
+ });
+
+ /* --- 3. rata-rata per mata pelajaran --- */
+ const pm={};
+ sudah.forEach(x=>{const m=x.mapel||'(tanpa mapel)';
+   if(!pm[m])pm[m]={j:0,n:0}; pm[m].j+=(x.nilai||0); pm[m].n++;});
+ const mapel=Object.keys(pm).map(m=>({m:m,v:Math.round(pm[m].j/pm[m].n),n:pm[m].n}))
+   .sort((a,b)=>b.v-a.v);
+
+ /* --- 4. peringkat guru --- */
+ const rank=sudah.slice().sort((a,b)=>(b.nilai||0)-(a.nilai||0));
+ const atas=rank.slice(0,5), bawah=rank.slice(-5).reverse();
+
+ const brs=(nama,v,ket)=>`<div class="bar1">
+   <div class="nm" title="${esc(nama)}">${esc(nama)}</div>
+   <div class="tr"><div class="fl" style="width:${Math.max(v,0)}%;background:${warnaNilai(v)}"></div></div>
+   <div class="vl">${v}${ket||''}</div></div>`;
+
+ box.innerHTML=`
+ <div class="bgn">
+  <h3>📊 Sebaran Predikat <em>${sudah.length} guru dinilai</em></h3>
+  <div class="prd">
+   <div class="pA"><b>${A}</b><span>A · Amat Baik<br>(≥90)</span></div>
+   <div class="pB"><b>${B}</b><span>B · Baik<br>(80–89)</span></div>
+   <div class="pC"><b>${C}</b><span>C · Cukup<br>(70–79)</span></div>
+   <div class="pD"><b>${D}</b><span>D · Perlu Pembinaan<br>(&lt;70)</span></div>
+  </div>
+ </div>
+
+ <div class="bgn">
+  <h3>🎯 Capaian Tiap Aspek Instrumen</h3>
+  <div class="pnl">
+   <div class="tgk">
+    ${asp.map(a=>`<div class="kl">
+      <div class="bt2" style="height:${Math.max(a.nilai,1)}%;background:${warnaNilai(a.nilai)}">
+        <span>${a.nilai}</span></div>
+      <div class="lb2">${a.ikon}<br><b>${a.kode}</b><br>${a.bobot}%</div>
+    </div>`).join('')}
+   </div>
+   <div class="ktr">
+    ${asp.map(a=>`<b>${a.kode}</b> = ${esc(a.judul)}`).join(' &nbsp;·&nbsp; ')}
+   </div>
+  </div>
+ </div>
+
+ <div class="grid2">
+  <div class="bgn">
+   <h3>📚 Rata-rata per Mata Pelajaran</h3>
+   <div class="pnl">
+    ${mapel.length?mapel.map(o=>brs(o.m,o.v,' <small style="color:#9aabb8">('+o.n+')</small>')).join('')
+      :'<div class="kosong2">Belum ada data.</div>'}
+   </div>
+  </div>
+
+  <div class="bgn">
+   <h3>🏅 Nilai Tertinggi</h3>
+   <div class="pnl">
+    ${atas.map(x=>brs(x.guru,x.nilai||0)).join('')}
+   </div>
+  </div>
+ </div>
+
+ ${rank.length>5?`<div class="bgn">
+  <h3>🔧 Perlu Perhatian <em>nilai terendah</em></h3>
+  <div class="pnl">${bawah.map(x=>brs(x.guru,x.nilai||0)).join('')}</div>
+ </div>`:''}
+ `;
+}
+
 function rekap(){
  ke('scrRekap');
  const sudah=DAFTAR.filter(x=>x.tahap==='dinilai');
@@ -1025,6 +1241,7 @@ function rekap(){
   <div class="st3"><div><b>${DAFTAR.length}</b><span>Total</span></div>
    <div><b>${sudah.length}</b><span>Dinilai</span></div>
    <div><b>${rata||'–'}</b><span>Rata-rata</span></div></div>`;
+ gambarBagan(sudah);
  document.getElementById('tblRekap').innerHTML=DAFTAR.length?`
   <div class="wrapt"><table class="tb"><thead><tr>
    <th>No</th><th>Nama Guru</th><th>NIP</th><th>Mapel</th><th>Kelas</th><th>Tanggal</th><th>Nilai</th><th>Predikat</th><th></th>
@@ -1245,5 +1462,5 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a28f0bd789aac613',t:'MTc4NjM2NTM4Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a28f51a01ca1ce0e',t:'MTc4NjM2ODI0NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
