@@ -171,6 +171,18 @@ box-shadow:0 2px 9px rgba(13,59,87,.08)}
 .mbtn{background:#0d3b57;color:#fff;border:0;border-radius:10px;padding:13px 22px;
   font-size:15px;font-weight:700;cursor:pointer;width:100%}
 .mbtn:hover{background:#155a82}
+.skala label{position:relative}
+.rub{margin-top:7px;border-left:3px solid #d7e3ec;padding-left:10px}
+.rub .rb{display:flex;gap:8px;align-items:flex-start;font-size:11.8px;color:#5a6b7a;
+  line-height:1.45;padding:3px 0;cursor:pointer;border-radius:5px}
+.rub .rb:hover{background:#f2f7fb}
+.rub .rb b{flex:0 0 20px;height:20px;line-height:20px;text-align:center;border-radius:5px;
+  color:#fff;font-size:11px;font-weight:700}
+.rub .rb.p1 b{background:#c0392b}.rub .rb.p2 b{background:#e08e0b}
+.rub .rb.p3 b{background:#2a7fb8}.rub .rb.p4 b{background:#1a9e4b}
+.rub .rb.aktif{background:#e9f4ff;color:#123;font-weight:600}
+.tglrub{background:none;border:0;color:#0d6ea8;font-size:11.5px;cursor:pointer;
+  padding:3px 0;font-weight:600;text-decoration:underline}
 #barAntre{position:sticky;top:52px;z-index:60;background:#fff4d6;border-bottom:2px solid #e0a800;
   padding:10px 14px;font-size:13.5px;color:#6b4b00;display:flex;gap:10px;align-items:center;
   justify-content:center;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.08)}
@@ -226,6 +238,11 @@ opacity:0;pointer-events:none;transition:.28s;z-index:90;box-shadow:0 6px 20px r
     <label for="fNip">NIP</label><input type="text" id="fNip" placeholder="Nomor Induk Pegawai (boleh dikosongkan)">
     <label for="fMapel">Mata Pelajaran</label><select id="fMapel"></select>
     <label for="fKelas">Kelas</label><select id="fKelas"></select>
+    <label for="fSem">Semester</label>
+    <select id="fSem">
+      <option value="Ganjil">Ganjil</option>
+      <option value="Genap">Genap</option>
+    </select>
     <label for="fTgl">Tanggal Supervisi</label><input type="date" id="fTgl">
     <label for="fMateri">Materi / Topik</label>
     <input type="text" id="fMateri" placeholder="Contoh: Chapter 1 Unit 3 — Active &amp; Passive Voice">
@@ -308,7 +325,8 @@ const CFG={
   nipKepsek:'19731011 200604 2 014',
   /* kode akses */
   kodeGuru:'spensabajaya-guru',
-  kodeSupervisor:'spensabajaya-kepsek',
+  kodeKepsek:'spensabajaya-kepsek',
+  kodeSupervisor:'spensabajaya-supervisor',
   kodeKurikulum:'spensabajaya-kurikulum',
   /* URL Apps Script — isi setelah deploy */
   url:'https://script.google.com/macros/s/AKfycbzxWiKYv7rzFh5II2_egEk-h5Ydhe2ri8bBKJFCDPCUkhrtIokyl2k8SUqQljpsnrMzTA/exec'
@@ -370,33 +388,105 @@ const KELAS=['VII A','VII B','VII C','VII D','VII E','VII F','VII G','VII H',
 const INSTRUMEN=[
  {kode:'A', judul:'Keselarasan Tujuan Pembelajaran', pasal:'Pasal 6', bobot:20, ikon:'🎯',
   butir:[
-   'Tujuan pembelajaran, langkah pembelajaran, dan asesmen pembelajaran sudah mengarah pada pencapaian Dimensi Profil Lulusan.',
-   'Tujuan pembelajaran yang dirumuskan Guru sudah mengacu pada Standar Kompetensi Lulusan (SKL) dan standar isi.',
-   'Tujuan pembelajaran, langkah pembelajaran, dan asesmen pembelajaran sudah selaras satu sama lain.',
-   'Tujuan pembelajaran mempertimbangkan karakteristik Murid dan sumber daya Satuan Pendidikan.'
+   {t:'Tujuan pembelajaran, langkah pembelajaran, dan asesmen pembelajaran sudah mengarah pada pencapaian Dimensi Profil Lulusan.',
+    d:['Hampir tidak ada — keterkaitan tujuan pembelajaran, langkah pembelajaran, dan asesmen dengan pencapaian Dimensi Profil Lulusan.',
+       'Sedikit dan lemah — keterkaitan tujuan pembelajaran, langkah pembelajaran, dan asesmen dengan pencapaian Dimensi Profil Lulusan.',
+       'Cukup — keterkaitan tujuan pembelajaran, langkah pembelajaran, dan asesmen dengan pencapaian Dimensi Profil Lulusan.',
+       'Memadai — keterkaitan tujuan pembelajaran, langkah pembelajaran, dan asesmen dengan pencapaian Dimensi Profil Lulusan.']},
+   {t:'Tujuan pembelajaran yang dirumuskan Guru sudah mengacu pada Standar Kompetensi Lulusan (SKL) dan standar isi.',
+    d:['Hampir tidak ada — acuan Standar Kompetensi Lulusan (SKL) dan standar isi pada rumusan tujuan pembelajaran.',
+       'Sedikit dan lemah — acuan Standar Kompetensi Lulusan (SKL) dan standar isi pada rumusan tujuan pembelajaran.',
+       'Cukup — acuan Standar Kompetensi Lulusan (SKL) dan standar isi pada rumusan tujuan pembelajaran.',
+       'Memadai — acuan Standar Kompetensi Lulusan (SKL) dan standar isi pada rumusan tujuan pembelajaran.']},
+   {t:'Tujuan pembelajaran, langkah pembelajaran, dan asesmen pembelajaran sudah selaras satu sama lain.',
+    d:['Hampir tidak ada — keselarasan antara tujuan pembelajaran, langkah pembelajaran, dan asesmen pembelajaran.',
+       'Sedikit dan lemah — keselarasan antara tujuan pembelajaran, langkah pembelajaran, dan asesmen pembelajaran.',
+       'Cukup — keselarasan antara tujuan pembelajaran, langkah pembelajaran, dan asesmen pembelajaran.',
+       'Memadai — keselarasan antara tujuan pembelajaran, langkah pembelajaran, dan asesmen pembelajaran.']},
+   {t:'Tujuan pembelajaran mempertimbangkan karakteristik Murid dan sumber daya Satuan Pendidikan.',
+    d:['Hampir tidak ada — pertimbangan karakteristik Murid dan sumber daya Satuan Pendidikan dalam merumuskan tujuan.',
+       'Sedikit dan lemah — pertimbangan karakteristik Murid dan sumber daya Satuan Pendidikan dalam merumuskan tujuan.',
+       'Cukup — pertimbangan karakteristik Murid dan sumber daya Satuan Pendidikan dalam merumuskan tujuan.',
+       'Memadai — pertimbangan karakteristik Murid dan sumber daya Satuan Pendidikan dalam merumuskan tujuan.']}
   ]},
  {kode:'B', judul:'Kerangka Pembelajaran dalam Perencanaan', pasal:'Pasal 12', bobot:20, ikon:'🧩',
   butir:[
-   'Praktik pedagogis yang direncanakan sudah tergambar pada langkah pembelajaran dan/atau asesmen.',
-   'Rencana kemitraan pembelajaran (Guru-Guru, Guru-Murid-orang tua/masyarakat) tergambar dalam perencanaan.',
-   'Rencana lingkungan pembelajaran (fisik, virtual, dan/atau sosial yang aman, nyaman, inklusif) tergambar dalam perencanaan.',
-   'Rencana pemanfaatan teknologi (digital maupun nondigital) tergambar dalam perencanaan.'
+   {t:'Praktik pedagogis yang direncanakan sudah tergambar pada langkah pembelajaran dan/atau asesmen.',
+    d:['Hampir tidak ada — gambaran praktik pedagogis pada langkah pembelajaran dan/atau asesmen.',
+       'Sedikit dan lemah — gambaran praktik pedagogis pada langkah pembelajaran dan/atau asesmen.',
+       'Cukup — gambaran praktik pedagogis pada langkah pembelajaran dan/atau asesmen.',
+       'Memadai — gambaran praktik pedagogis pada langkah pembelajaran dan/atau asesmen.']},
+   {t:'Rencana kemitraan pembelajaran (Guru-Guru, Guru-Murid-orang tua/masyarakat) tergambar dalam perencanaan.',
+    d:['Hampir tidak ada — rencana kemitraan pembelajaran antara Guru-Guru, Guru-Murid, dan orang tua/masyarakat.',
+       'Sedikit dan lemah — rencana kemitraan pembelajaran antara Guru-Guru, Guru-Murid, dan orang tua/masyarakat.',
+       'Cukup — rencana kemitraan pembelajaran antara Guru-Guru, Guru-Murid, dan orang tua/masyarakat.',
+       'Memadai — rencana kemitraan pembelajaran antara Guru-Guru, Guru-Murid, dan orang tua/masyarakat.']},
+   {t:'Rencana lingkungan pembelajaran (fisik, virtual, dan/atau sosial yang aman, nyaman, inklusif) tergambar dalam perencanaan.',
+    d:['Hampir tidak ada — rencana lingkungan pembelajaran fisik, virtual, dan/atau sosial yang aman, nyaman, dan inklusif.',
+       'Sedikit dan lemah — rencana lingkungan pembelajaran fisik, virtual, dan/atau sosial yang aman, nyaman, dan inklusif.',
+       'Cukup — rencana lingkungan pembelajaran fisik, virtual, dan/atau sosial yang aman, nyaman, dan inklusif.',
+       'Memadai — rencana lingkungan pembelajaran fisik, virtual, dan/atau sosial yang aman, nyaman, dan inklusif.']},
+   {t:'Rencana pemanfaatan teknologi (digital maupun nondigital) tergambar dalam perencanaan.',
+    d:['Hampir tidak ada — rencana pemanfaatan teknologi digital maupun nondigital dalam pembelajaran.',
+       'Sedikit dan lemah — rencana pemanfaatan teknologi digital maupun nondigital dalam pembelajaran.',
+       'Cukup — rencana pemanfaatan teknologi digital maupun nondigital dalam pembelajaran.',
+       'Memadai — rencana pemanfaatan teknologi digital maupun nondigital dalam pembelajaran.']}
   ]},
  {kode:'C', judul:'Langkah Pembelajaran &amp; Prinsip Pembelajaran Mendalam', pasal:'Pasal 3, 7, 10, 11', bobot:40, ikon:'🌱',
   butir:[
-   'Langkah pembelajaran memfasilitasi Murid untuk merasakan pengalaman belajar MEMAHAMI (terlibat aktif mengonstruksi pengetahuan dari berbagai sumber dan konteks).',
-   'Langkah pembelajaran memfasilitasi Murid untuk merasakan pengalaman belajar MENGAPLIKASI (menerapkan pemahaman secara kontekstual dalam kehidupan nyata).',
-   'Langkah pembelajaran memfasilitasi Murid untuk merasakan pengalaman belajar MEREFLEKSI (mengevaluasi dan memaknai proses serta hasil belajar, mengatur diri sendiri).',
-   'Langkah pembelajaran mencerminkan sikap saling memuliakan antara Guru-Murid, Murid-Guru, dan Murid-Murid.',
-   'Prinsip berkesadaran, bermakna, dan menggembirakan tergambar pada setiap tahapan langkah pembelajaran.',
-   'Perencanaan pembelajaran sudah mengakomodasi pengalaman belajar yang sesuai dengan karakteristik Murid.'
+   {t:'Langkah pembelajaran memfasilitasi Murid untuk merasakan pengalaman belajar MEMAHAMI (terlibat aktif mengonstruksi pengetahuan dari berbagai sumber dan konteks).',
+    d:['Hampir tidak ada — fasilitasi pengalaman belajar MEMAHAMI, yakni Murid terlibat aktif mengonstruksi pengetahuan dari berbagai sumber dan konteks.',
+       'Sedikit dan lemah — fasilitasi pengalaman belajar MEMAHAMI, yakni Murid terlibat aktif mengonstruksi pengetahuan dari berbagai sumber dan konteks.',
+       'Cukup — fasilitasi pengalaman belajar MEMAHAMI, yakni Murid terlibat aktif mengonstruksi pengetahuan dari berbagai sumber dan konteks.',
+       'Memadai — fasilitasi pengalaman belajar MEMAHAMI, yakni Murid terlibat aktif mengonstruksi pengetahuan dari berbagai sumber dan konteks.']},
+   {t:'Langkah pembelajaran memfasilitasi Murid untuk merasakan pengalaman belajar MENGAPLIKASI (menerapkan pemahaman secara kontekstual dalam kehidupan nyata).',
+    d:['Hampir tidak ada — fasilitasi pengalaman belajar MENGAPLIKASI, yakni Murid menerapkan pemahaman secara kontekstual dalam kehidupan nyata.',
+       'Sedikit dan lemah — fasilitasi pengalaman belajar MENGAPLIKASI, yakni Murid menerapkan pemahaman secara kontekstual dalam kehidupan nyata.',
+       'Cukup — fasilitasi pengalaman belajar MENGAPLIKASI, yakni Murid menerapkan pemahaman secara kontekstual dalam kehidupan nyata.',
+       'Memadai — fasilitasi pengalaman belajar MENGAPLIKASI, yakni Murid menerapkan pemahaman secara kontekstual dalam kehidupan nyata.']},
+   {t:'Langkah pembelajaran memfasilitasi Murid untuk merasakan pengalaman belajar MEREFLEKSI (mengevaluasi dan memaknai proses serta hasil belajar, mengatur diri sendiri).',
+    d:['Hampir tidak ada — fasilitasi pengalaman belajar MEREFLEKSI, yakni Murid mengevaluasi dan memaknai proses serta hasil belajarnya.',
+       'Sedikit dan lemah — fasilitasi pengalaman belajar MEREFLEKSI, yakni Murid mengevaluasi dan memaknai proses serta hasil belajarnya.',
+       'Cukup — fasilitasi pengalaman belajar MEREFLEKSI, yakni Murid mengevaluasi dan memaknai proses serta hasil belajarnya.',
+       'Memadai — fasilitasi pengalaman belajar MEREFLEKSI, yakni Murid mengevaluasi dan memaknai proses serta hasil belajarnya.']},
+   {t:'Langkah pembelajaran mencerminkan sikap saling memuliakan antara Guru-Murid, Murid-Guru, dan Murid-Murid.',
+    d:['Hampir tidak ada — gambaran sikap saling memuliakan antara Guru-Murid dan Murid-Murid pada langkah pembelajaran.',
+       'Sedikit dan lemah — gambaran sikap saling memuliakan antara Guru-Murid dan Murid-Murid pada langkah pembelajaran.',
+       'Cukup — gambaran sikap saling memuliakan antara Guru-Murid dan Murid-Murid pada langkah pembelajaran.',
+       'Memadai — gambaran sikap saling memuliakan antara Guru-Murid dan Murid-Murid pada langkah pembelajaran.']},
+   {t:'Prinsip berkesadaran, bermakna, dan menggembirakan tergambar pada setiap tahapan langkah pembelajaran.',
+    d:['Hampir tidak ada — gambaran prinsip berkesadaran, bermakna, dan menggembirakan pada setiap tahapan pembelajaran.',
+       'Sedikit dan lemah — gambaran prinsip berkesadaran, bermakna, dan menggembirakan pada setiap tahapan pembelajaran.',
+       'Cukup — gambaran prinsip berkesadaran, bermakna, dan menggembirakan pada setiap tahapan pembelajaran.',
+       'Memadai — gambaran prinsip berkesadaran, bermakna, dan menggembirakan pada setiap tahapan pembelajaran.']},
+   {t:'Perencanaan pembelajaran sudah mengakomodasi pengalaman belajar yang sesuai dengan karakteristik Murid.',
+    d:['Hampir tidak ada — penyesuaian pengalaman belajar dengan karakteristik dan kebutuhan Murid.',
+       'Sedikit dan lemah — penyesuaian pengalaman belajar dengan karakteristik dan kebutuhan Murid.',
+       'Cukup — penyesuaian pengalaman belajar dengan karakteristik dan kebutuhan Murid.',
+       'Memadai — penyesuaian pengalaman belajar dengan karakteristik dan kebutuhan Murid.']}
   ]},
  {kode:'D', judul:'Penilaian / Asesmen Pembelajaran', pasal:'Pasal 8', bobot:20, ikon:'📊',
   butir:[
-   'Asesmen yang direncanakan turut mengukur ketercapaian Dimensi Profil Lulusan Murid, bukan hanya capaian akademik.',
-   'Perencanaan memuat asesmen yang digunakan untuk memberikan umpan balik guru memperbaiki proses pembelajaran.',
-   'Perencanaan memuat asesmen yang dapat mengukur ketercapaian tujuan pembelajaran sesuai karakteristik Murid.',
-   'Asesmen sudah memiliki teknik dan/atau instrumen dengan kriteria yang jelas untuk mengukur ketercapaian tujuan pembelajaran.'
+   {t:'Asesmen yang direncanakan turut mengukur ketercapaian Dimensi Profil Lulusan Murid, bukan hanya capaian akademik.',
+    d:['Hampir tidak ada — asesmen yang mengukur ketercapaian Dimensi Profil Lulusan, bukan hanya capaian akademik.',
+       'Sedikit dan lemah — asesmen yang mengukur ketercapaian Dimensi Profil Lulusan, bukan hanya capaian akademik.',
+       'Cukup — asesmen yang mengukur ketercapaian Dimensi Profil Lulusan, bukan hanya capaian akademik.',
+       'Memadai — asesmen yang mengukur ketercapaian Dimensi Profil Lulusan, bukan hanya capaian akademik.']},
+   {t:'Perencanaan memuat asesmen yang digunakan untuk memberikan umpan balik guru memperbaiki proses pembelajaran.',
+    d:['Hampir tidak ada — asesmen yang menghasilkan umpan balik bagi Guru untuk memperbaiki proses pembelajaran.',
+       'Sedikit dan lemah — asesmen yang menghasilkan umpan balik bagi Guru untuk memperbaiki proses pembelajaran.',
+       'Cukup — asesmen yang menghasilkan umpan balik bagi Guru untuk memperbaiki proses pembelajaran.',
+       'Memadai — asesmen yang menghasilkan umpan balik bagi Guru untuk memperbaiki proses pembelajaran.']},
+   {t:'Perencanaan memuat asesmen yang dapat mengukur ketercapaian tujuan pembelajaran sesuai karakteristik Murid.',
+    d:['Hampir tidak ada — asesmen yang mengukur ketercapaian tujuan pembelajaran sesuai karakteristik Murid.',
+       'Sedikit dan lemah — asesmen yang mengukur ketercapaian tujuan pembelajaran sesuai karakteristik Murid.',
+       'Cukup — asesmen yang mengukur ketercapaian tujuan pembelajaran sesuai karakteristik Murid.',
+       'Memadai — asesmen yang mengukur ketercapaian tujuan pembelajaran sesuai karakteristik Murid.']},
+   {t:'Asesmen sudah memiliki teknik dan/atau instrumen dengan kriteria yang jelas untuk mengukur ketercapaian tujuan pembelajaran.',
+    d:['Hampir tidak ada — teknik dan/atau instrumen asesmen dengan kriteria (KKTP) yang jelas dan terukur.',
+       'Sedikit dan lemah — teknik dan/atau instrumen asesmen dengan kriteria (KKTP) yang jelas dan terukur.',
+       'Cukup — teknik dan/atau instrumen asesmen dengan kriteria (KKTP) yang jelas dan terukur.',
+       'Memadai — teknik dan/atau instrumen asesmen dengan kriteria (KKTP) yang jelas dan terukur.']}
   ]}
 ];
 
@@ -456,6 +546,7 @@ function masuk(){
  const p=document.getElementById('pesan');
  let peran='';
  if(v===CFG.kodeGuru)peran='guru';
+ else if(v===CFG.kodeKepsek)peran='kepsek';
  else if(v===CFG.kodeSupervisor)peran='supervisor';
  else if(v===CFG.kodeKurikulum)peran='kurikulum';
  if(!peran){p.textContent='Kode akses tidak dikenali.';p.className='warn show';
@@ -463,16 +554,22 @@ function masuk(){
  p.className='warn';ST.peran=peran;simpan();bukaPeran();
 }
 function bukaPeran(){
- const nm={guru:'Guru',supervisor:'Kepala Sekolah / Tim Supervisor',kurikulum:'Tim Kurikulum'};
+ const nm={guru:'Guru',kepsek:'Kepala Sekolah',supervisor:'Supervisor',kurikulum:'Tim Kurikulum'};
  document.getElementById('lblPeran').textContent=nm[ST.peran]||'';
  if(ST.peran==='guru'){isiPilihan();ke('scrGuru');}
  else{ke('scrDaftar');muatDaftar();}
 }
 
 /* ============ FORM GURU ============ */
+/* untuk pengurutan A-Z: abaikan gelar di depan nama */
+function bersihNama(t){
+ return String(t||'').replace(/^\s*(Dra\.|Drs\.|Dr\.|Ir\.|Hj\.|H\.|Prof\.)\s*/i,'').trim();
+}
 function isiPilihan(){
  const g=document.getElementById('fGuru'),m=document.getElementById('fMapel'),k=document.getElementById('fKelas');
- g.innerHTML='<option value="">— pilih —</option>'+GURU.map((x,i)=>`<option value="${i}">${esc(x.n)}</option>`).join('');
+ const urut=GURU.map((x,i)=>({x:x,i:i}))
+   .sort((a,b)=>bersihNama(a.x.n).localeCompare(bersihNama(b.x.n),'id',{sensitivity:'base'}));
+ g.innerHTML='<option value="">— pilih —</option>'+urut.map(o=>`<option value="${o.i}">${esc(o.x.n)}</option>`).join('');
  m.innerHTML='<option value="">— pilih —</option>'+MAPEL.map(x=>`<option>${esc(x)}</option>`).join('');
  k.innerHTML='<option value="">— pilih —</option>'+KELAS.map(x=>`<option>${esc(x)}</option>`).join('');
  document.getElementById('fTgl').value=hariIni();
@@ -624,15 +721,41 @@ function kirimSatu(muatan,ok,gagal){
  }
 }
 
+function teksButir(x){ return (x&&x.t!==undefined)?x.t:x; }
+function rubrikButir(x){ return (x&&x.d)?x.d:null; }
+
+/* daftar deskripsi 1-4 di bawah setiap butir */
+function kotakRubrik(x,nama,pilih){
+ const d=rubrikButir(x); if(!d)return '';
+ return `<div class="rub">${d.map((tk,k)=>`
+   <div class="rb p${k+1} ${pilih===(k+1)?'aktif':''}" data-n="${nama}" data-v="${k+1}"
+        onclick="pilihRub(this)"><b>${k+1}</b><span>${esc(tk)}</span></div>`).join('')}</div>`;
+}
+/* klik deskripsi = memilih angkanya */
+function pilihRub(el){
+ const nama=el.getAttribute('data-n'), v=el.getAttribute('data-v');
+ const r=document.querySelector('input[name="'+nama+'"][value="'+v+'"]');
+ if(r&&!r.disabled){ r.checked=true; if(r.onchange)r.onchange(); segarkanRub(nama); }
+}
+function segarkanRub(nama){
+ const r=document.querySelector('input[name="'+nama+'"]:checked');
+ const v=r?r.value:null;
+ document.querySelectorAll('.rb[data-n="'+nama+'"]').forEach(function(el){
+   el.classList.toggle('aktif', el.getAttribute('data-v')===v);
+ });
+}
+
 function renderPD(){
  document.getElementById('boxPD').innerHTML=INSTRUMEN.map(b=>`
   <div class="grup">
     <div class="ghead">${b.ikon} ${b.kode}. ${b.judul} <em>(${b.pasal||''} · bobot ${b.bobot}%)</em></div>
-    ${b.butir.map((t,i)=>`
+    ${b.butir.map((x,i)=>`
       <div class="butir">
-        <div class="bt"><b>${nomorGlobal(b.kode,i)}.</b> ${t}</div>
+        <div class="bt"><b>${nomorGlobal(b.kode,i)}.</b> ${teksButir(x)}</div>
         <div class="skala">${SKALA.map(s=>`
-          <label><input type="radio" name="pd_${b.kode}${i}" value="${s.n}"><span style="--c:${s.w}">${s.n}</span></label>`).join('')}</div>
+          <label><input type="radio" name="pd_${b.kode}${i}" value="${s.n}"
+            onchange="segarkanRub('pd_${b.kode}${i}')"><span style="--c:${s.w}">${s.n}</span></label>`).join('')}</div>
+        ${kotakRubrik(x,'pd_'+b.kode+i,null)}
       </div>`).join('')}
   </div>`).join('');
 }
@@ -656,12 +779,13 @@ function kirimGuru(){
  const gi=document.getElementById('fGuru').value;
  const g=(gi!==''&&GURU[gi])?GURU[gi].n:'', m=document.getElementById('fMapel').value,
        k=document.getElementById('fKelas').value, t=document.getElementById('fTgl').value,
+       sem=(document.getElementById('fSem')||{}).value||'Ganjil',
        mat=document.getElementById('fMateri').value.trim();
  if(!g||!m||!k||!t){alert('Lengkapi nama, mata pelajaran, kelas, dan tanggal.');return;}
  const pd=kumpulkanPD();
  if(pd._terisi===0 && !confirm('Penilaian diri belum diisi. Tetap kirim?'))return;
  const rec={id:idBaru(),tahap:'diisi guru',guru:g,nip:document.getElementById('fNip').value.trim(),
-   mapel:m,kelas:k,tgl:t,
+   mapel:m,kelas:k,semester:sem,tgl:t,
    materi:mat, catatanGuru:document.getElementById('fCatatan').value.trim(),
    pd:pd, waktu:new Date().toISOString()};
  ST.guru=g;simpan();
@@ -711,7 +835,7 @@ function tampilDaftar(){
       <b>${esc(x.guru)}</b>
       <span class="pil ${dinilai?'ok':'wait'}">${dinilai?'Sudah dinilai':'Menunggu penilaian'}</span>
     </div>
-    <div class="k2b">${esc(x.mapel)} · ${esc(x.kelas)} · ${tglID(x.tgl)}</div>
+    <div class="k2b">${esc(x.mapel)} · ${esc(x.kelas)}${x.semester?' · Sem. '+esc(x.semester):''} · ${tglID(x.tgl)}</div>
     ${dinilai?`<div class="k2c">Nilai akhir: <b>${x.nilai}</b> <span class="pred">${x.predikat}</span></div>`:''}
   </div>`;}).join('');
 }
@@ -725,7 +849,7 @@ function predikat(n){
 /* ============ HALAMAN PENILAIAN ============ */
 function buka(id){
  AKTIF=DAFTAR.find(x=>x.id===id); if(!AKTIF)return;
- const x=AKTIF, boleh=(ST.peran==='supervisor');
+ const x=AKTIF, boleh=(ST.peran==='supervisor'||ST.peran==='kepsek');
  document.getElementById('judulNilai').innerHTML=
   `${esc(x.guru)}<span>${x.nip?'NIP '+esc(x.nip)+' · ':''}${esc(x.mapel)} · ${esc(x.kelas)} · ${tglID(x.tgl)}</span>`;
  let h='';
@@ -742,17 +866,18 @@ function buka(id){
  /* instrumen */
  INSTRUMEN.forEach(b=>{
   h+=`<div class="grup"><div class="ghead">${b.ikon} ${b.kode}. ${b.judul} <em>(${b.pasal||''} · bobot ${b.bobot}%)</em></div>`;
-  b.butir.forEach((t,i)=>{
+  b.butir.forEach((bx,i)=>{
    const kk=b.kode+(i+1);
    const pdv=(x.pd&&x.pd[kk]!=null)?x.pd[kk]:null;
    const sv=(x.sv&&x.sv[kk]!=null)?x.sv[kk]:null;
    h+=`<div class="butir">
-     <div class="bt"><b>${nomorGlobal(b.kode,i)}.</b> ${t}</div>
+     <div class="bt"><b>${nomorGlobal(b.kode,i)}.</b> ${teksButir(bx)}</div>
      <div class="duaskor">
        <span class="tagpd">Guru: <b>${pdv==null?'–':pdv}</b></span>
        <div class="skala">${SKALA.map(s=>`
-         <label><input type="radio" name="sv_${kk}" value="${s.n}" ${sv===s.n?'checked':''} ${boleh?'':'disabled'} onchange="hitung()"><span style="--c:${s.w}">${s.n}</span></label>`).join('')}</div>
-     </div></div>`;
+         <label><input type="radio" name="sv_${kk}" value="${s.n}" ${sv===s.n?'checked':''} ${boleh?'':'disabled'} onchange="hitung();segarkanRub('sv_${kk}')"><span style="--c:${s.w}">${s.n}</span></label>`).join('')}</div>
+     </div>
+     ${kotakRubrik(bx,'sv_'+kk,sv)}</div>`;
   });
   h+=`</div>`;
  });
@@ -821,12 +946,14 @@ function cetak(){
  let rows='';
  INSTRUMEN.forEach(b=>{
   rows+=`<tr class="gr"><td colspan="7"><b>${b.kode}. ${b.judul}</b> (${b.pasal||''})</td></tr>`;
-  b.butir.forEach((t,i)=>{
+  b.butir.forEach((bx,i)=>{
    const kk=b.kode+(i+1);
    const el=document.querySelector(`input[name="sv_${kk}"]:checked`);
    const svv=el?Number(el.value):((x.sv&&x.sv[kk]!=null)?x.sv[kk]:null);
    const ck=n=>svv===n?'&#10003;':'';
-   rows+=`<tr><td class="c">${nomorGlobal(b.kode,i)}</td><td>${t}</td>
+   const rb=rubrikButir(bx);
+   const ket=(rb&&svv)?`<div style="font-size:9pt;color:#555;margin-top:3px"><i>${esc(rb[svv-1])}</i></div>`:'';
+   rows+=`<tr><td class="c">${nomorGlobal(b.kode,i)}</td><td>${teksButir(bx)}${ket}</td>
      <td class="c">${ck(1)}</td><td class="c">${ck(2)}</td><td class="c">${ck(3)}</td><td class="c">${ck(4)}</td></tr>`;
   });
  });
@@ -863,6 +990,7 @@ function cetak(){
   <tr><td>NIP</td><td>: ${esc(x.nip||'-')}</td></tr>
   <tr><td>Mata Pelajaran</td><td>: ${esc(x.mapel)}</td></tr>
   <tr><td>Kelas</td><td>: ${esc(x.kelas)}</td></tr>
+  <tr><td>Semester</td><td>: ${esc(x.semester||'-')}</td></tr>
   <tr><td>Hari / Tanggal</td><td>: ${tglID(x.tgl)}</td></tr>
   <tr><td>Materi</td><td>: ${esc(x.materi||'-')}</td></tr>
   <tr><td>Dokumen</td><td>: ${dok||'-'}</td></tr>
@@ -1070,6 +1198,7 @@ function kotakBerhasil(rec){
   '<tr><td>Nama Guru</td><td>'+esc(rec.guru)+'</td></tr>'+
   '<tr><td>Mata Pelajaran</td><td>'+esc(rec.mapel)+'</td></tr>'+
   '<tr><td>Kelas</td><td>'+esc(rec.kelas)+'</td></tr>'+
+  '<tr><td>Semester</td><td>'+esc(rec.semester||'-')+'</td></tr>'+
   '<tr><td>Tanggal Supervisi</td><td>'+esc(rec.tgl)+'</td></tr>'+
   '<tr><td>Nilai Penilaian Diri</td><td><b>'+((rec.pd&&rec.pd._total)||0)+'</b> ('+((rec.pd&&rec.pd._terisi)||0)+' dari 18 butir terisi)</td></tr>'+
   '<tr><td>Foto</td><td>'+nfoto+'</td></tr>'+
@@ -1116,5 +1245,5 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a28f0bd789aac613',t:'MTc4NjM2NTM4Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
